@@ -1,0 +1,14 @@
+Khái niệm Ổ gà (Pothole):
+Ổ gà trên mặt đường là những hố, hõm sâu hình thành do sự suy yếu của lớp kết cấu hạ tầng giao thông (bê tông nhựa hoặc bê tông xi măng). Ổ gà thường xuất hiện sau các đợt mưa kéo dài, khi nước thấm qua các vết nứt nhỏ, làm mềm nền đường bên dưới và tác động tải trọng giao thông liên tục từ các phương tiện làm sụt lở từng mảng mặt đường.
+
+Đặc điểm nhận dạng ổ gà:
+- Có dạng hình tròn, hình bầu dục hoặc các hình dạng bất định với mép gờ nhấp nhô.
+- Chiều sâu thường dao động từ vài xentimét (cm) đến hàng chục xentimét.
+- Thường chứa nước mưa, bùn đất hoặc cát đá vụn vỡ từ mặt đường.
+- Trong thị giác máy tính và bài toán phân vùng (segmentation), ổ gà được phân định bằng đường ranh giới polygon (mask) bao quanh chính xác diện tích phần hư hại của mặt đường.
+
+Nguyên nhân hình thành ổ gà:
+1. Đọng nước mưa lâu ngày làm giảm liên kết của nhựa đường.
+2. Phương tiện có tải trọng quá khổ, quá tải lưu thông liên tục.
+3. Chất lượng thi công, vật liệu thảm nhựa đường kém hoặc hết niên hạn sử dụng.
+4. Sự biến dạng nhiệt giữa mùa nắng và mùa mưa làm co giãn gây nứt vỡ.

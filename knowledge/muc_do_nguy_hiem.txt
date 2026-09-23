@@ -1,0 +1,19 @@
+Phân loại mức độ nguy hiểm của ổ gà:
+
+1. Mức độ Nhẹ (Low Risk / Cảnh báo nhẹ):
+- Số lượng ổ gà: 1 - 2 ổ nhỏ.
+- Tổng diện tích phân vùng (mask area): Dưới 50,000 pixels.
+- Mức độ ảnh hưởng: Xe máy và ô tô có thể di chuyển qua với tốc độ chậm mà ít bị ảnh hưởng lớn.
+- Khuyến nghị: Cần ghi nhận vị trí để lên kế hoạch dặm vá định kỳ.
+
+2. Mức độ Trung bình (Medium Risk / Nguy cơ trung bình):
+- Số lượng ổ gà: 3 - 5 ổ gà hoặc 1 - 2 ổ gà có diện tích lớn.
+- Tổng diện tích phân vùng: Từ 50,000 pixels đến 150,000 pixels.
+- Mức độ ảnh hưởng: Dễ gây xóc mạnh, lệch tay lái đối với xe máy, nguy cơ nổ lốp hoặc hư hỏng hệ thống gầm ô tô.
+- Khuyến nghị: Cần đặt biển cảnh báo và phân luồng, ưu tiên sửa chữa trong vòng 24 - 48 giờ.
+
+3. Mức độ Cao / Nghiêm trọng (High Risk / Nguy cơ cao):
+- Số lượng ổ gà: Trên 5 ổ gà hoặc tổng diện tích phân vùng vượt quá 150,000 pixels.
+- Tồn tại các ổ gà hố sâu, đọng nước giấu chiều sâu thực tế.
+- Mức độ ảnh hưởng: Nguy cơ cực kỳ cao gây tai nạn giao thông nghiêm trọng, lật xe máy, hỏng trục bánh ô tô.
+- Khuyến nghị: Khẩn cấp sửa chữa và khắc phục tạm thời ngay lập tức, phân luồng giao thông tránh khu vực hư hại.

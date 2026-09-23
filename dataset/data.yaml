@@ -1,0 +1,5 @@
+train: ../archive/Pothole_Segmentation_YOLOv8/train/images
+val: ../archive/Pothole_Segmentation_YOLOv8/valid/images
+
+nc: 1
+names: ['Pothole']

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pothole Segmentation on Road Surfaces</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <!-- Xóa tên chủ đề và mô tả theo yêu cầu -->
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#" class="active">Trang chủ</a></li>
+            <li><a href="#">Giới thiệu</a></li>
+            <li><a href="#">Phương pháp</a></li>
+            <li><a href="#">Kết quả</a></li>
+            <li><a href="#">Demo</a></li>
+            <li><a href="#">Liên hệ</a></li>
+        </ul>
+        <!-- Xóa logo HUST theo yêu cầu -->
+    </nav>
+
+    <!-- Main Content -->
+    <div class="app-container">
+        <!-- Left Panel: Workspace -->
+        <div class="panel left-panel">
+            <div class="panel-header">
+                <h2>KHÔNG GIAN LÀM VIỆC (WORKSPACE)</h2>
+            </div>
+            <div class="panel-body workspace-body">
+                <div id="imageContainer" class="image-container empty">
+                    <div id="emptyState" class="empty-state">
+                        <i class="ph ph-stack"></i>
+                        <p>Chờ tải dữ liệu</p>
+                    </div>
+                    <img id="displayImage" class="hidden" src="" alt="Workspace Image">
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Panel: Controls -->
+        <div class="panel middle-panel">
+            <div class="panel-header">
+                <h2>Bảng Điều Khiển Hệ Thống (System Control Panel)</h2>
+                <p class="subtitle">Dedicated controls with advanced control</p>
+            </div>
+            <div class="panel-body">
+                
+                <div class="control-row">
+                    <!-- Model Selection -->
+                    <div class="model-selection">
+                        <h3>CHỌN MÔ HÌNH (MODEL SELECTION)</h3>
+                        <div class="radio-group">
+                            <label><input type="radio" name="model" checked> YOLOv8-Seg (Active)</label>
+                            <label class="disabled"><input type="radio" name="model" disabled> U-Net (Base)</label>
+                            <label class="disabled"><input type="radio" name="model" disabled> DeepLabV3+</label>
+                        </div>
+                    </div>
+
+                    <!-- Upload -->
+                    <div class="upload-section">
+                        <h3>UPLOAD ẢNH MỚI</h3>
+                        <input type="file" id="imageInput" accept="image/*" hidden>
+                        <button id="uploadBtn" class="btn btn-blue">
+                            <i class="ph ph-upload-simple"></i> Drag/load ảnh mới
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Parameters -->
+                <div class="parameters-section">
+                    <h3>ĐIỀU CHỈNH THAM SỐ (PARAMETER TUNING)</h3>
+                    <div class="slider-group">
+                        <label>Threshold (Ngưỡng Confidence)</label>
+                        <div class="slider-row">
+                            <input type="range" id="confSlider" min="0.01" max="0.99" step="0.01" value="0.5">
+                            <span id="confValue">0.5</span>
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label>Nms Threshold (Ngưỡng NMS)</label>
+                        <div class="slider-row">
+                            <input type="range" id="iouSlider" min="0.01" max="0.99" step="0.01" value="0.3">
+                            <span id="iouValue">0.3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="segmentBtn" class="btn btn-gray" disabled>PHÂN VÙNG (SEGMENT)</button>
+                    <button id="clearBtn" class="btn btn-red">CLEAR (XÓA)</button>
+                </div>
+                
+                <!-- Status Flow -->
+                <div class="status-flow">
+                    <div class="status-step"><i class="ph ph-file-image"></i><span>Loaded</span></div>
+                    <div class="status-arrow">↓</div>
+                    <div class="status-step"><i class="ph ph-magic-wand"></i><span>Segmented</span></div>
+                    <div class="status-arrow">↓</div>
+                    <div class="status-step active"><i class="ph ph-check-square"></i><span>Reported</span></div>
+                </div>
+
+                <!-- Input Summary -->
+                <div class="summary-section">
+                    <h3>TÓM TẮT DỮ LIỆU ĐẦU VÀO (INPUT DATA SUMMARY)</h3>
+                    <div class="summary-content">
+                        <div class="summary-thumb">
+                            <img id="thumbImage" src="" alt="" style="display:none;">
+                            <div id="thumbEmpty" class="thumb-empty">No Image</div>
+                        </div>
+                        <div class="summary-details">
+                            <div class="detail-row">
+                                <label>Tên tệp</label>
+                                <input type="text" id="infoFilename" readonly value="--">
+                            </div>
+                            <div class="detail-row">
+                                <label>Kích thước</label>
+                                <input type="text" id="infoSize" readonly value="--">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right Panel: Analytics -->
+        <div class="panel right-panel" style="box-sizing: border-box; min-width: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <style>
+                /* Dashboard Scoped Styles */
+                .right-panel * {
+                    box-sizing: border-box;
+                }
+                .right-panel-header {
+                    text-align: center;
+                    padding: 20px 15px;
+                    border-bottom: 1px solid var(--panel-border, #cbd5e1);
+                    background-color: #f1f5f9;
+                }
+                .right-panel-header h2 {
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                    margin-bottom: 5px;
+                    color: #1e293b;
+                }
+                .right-panel-header p {
+                    font-size: 0.85rem;
+                    color: #64748b;
+                }
+                .dashboard-section {
+                    margin-bottom: 20px;
+                }
+                .dashboard-section h3 {
+                    font-size: 0.9rem;
+                    color: #1e293b;
+                    margin-bottom: 12px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                }
+                
+                /* Quick Report */
+                .quick-stats-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                    gap: 12px;
+                    width: 100%;
+                }
+                .quick-stat-card {
+                    background: #fff;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    padding: 12px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                }
+                .quick-stat-icon {
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.5rem;
+                    color: #fff;
+                    flex-shrink: 0;
+                }
+                .icon-blue { background-color: #3b82f6; }
+                .icon-green { background-color: #22c55e; }
+                .icon-purple { background-color: #8b5cf6; }
+                
+                .quick-stat-content {
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                }
+                .quick-stat-content .stat-label {
+                    font-size: 0.8rem;
+                    color: #1e293b;
+                    font-weight: 700;
+                    margin-bottom: 2px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .quick-stat-content .stat-value {
+                    font-size: 1.4rem;
+                    font-weight: 700;
+                    color: #0f4c81;
+                }
+                
+                /* Area Chart */
+                .dashboard-chart-box {
+                    background: #fff;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px 8px 0 0;
+                    padding: 20px;
+                    width: 100%;
+                    height: auto;
+                    min-height: 240px;
+                    position: relative;
+                }
+                
+                /* Statistics Cards (Bottom of chart) */
+                .statistics-container {
+                    width: 100%;
+                    display: grid;
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                    gap: 0;
+                    box-sizing: border-box;
+                    background: #fff;
+                    border: 1px solid #e2e8f0;
+                    border-top: none;
+                    border-radius: 0 0 8px 8px;
+                }
+                .statistics-card {
+                    min-width: 0;
+                    width: 100%;
+                    box-sizing: border-box;
+                    text-align: center;
+                    padding: 16px 8px;
+                    border-right: 1px solid #e2e8f0;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .statistics-card:last-child {
+                    border-right: none;
+                }
+                .stat-header-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    margin-bottom: 8px;
+                    width: 100%;
+                }
+                .stat-header-row i {
+                    font-size: 1.1rem;
+                }
+                .stat-header-row .stat-label {
+                    font-size: 0.75rem;
+                    color: #475569;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .statistics-card .stat-val {
+                    font-size: 1.15rem;
+                    font-weight: 700;
+                    color: #1e293b;
+                    word-break: break-word;
+                }
+                
+                /* Responsive */
+                @media (max-width: 1024px) {
+                    .quick-stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+                    .statistics-container {
+                        grid-template-columns: repeat(2, minmax(0, 1fr));
+                        border-top: 1px solid #e2e8f0;
+                        border-radius: 8px;
+                        margin-top: 10px;
+                    }
+                    .dashboard-chart-box { border-radius: 8px; }
+                    .statistics-card:nth-child(2) { border-right: none; }
+                    .statistics-card:nth-child(1), .statistics-card:nth-child(2) { border-bottom: 1px solid #e2e8f0; }
+                }
+                @media (max-width: 600px) {
+                    .quick-stats-grid { grid-template-columns: minmax(0, 1fr); }
+                    .statistics-container { grid-template-columns: minmax(0, 1fr); }
+                    .statistics-card { border-right: none !important; border-bottom: 1px solid #e2e8f0; }
+                    .statistics-card:last-child { border-bottom: none; }
+                }
+                
+                .btn-download-full {
+                    width: 100%;
+                    padding: 14px;
+                    border-radius: 6px;
+                    font-weight: 700;
+                    background: #4f46e5;
+                    color: #fff;
+                    border: none;
+                    cursor: pointer;
+                    text-align: center;
+                    margin-top: auto;
+                    font-size: 1rem;
+                }
+            </style>
+
+            <div class="right-panel-header">
+                <h2>THỐNG KÊ KẾT QUẢ (RESULTS ANALYTICS)</h2>
+                <p>Real time data visualization</p>
+            </div>
+            
+            <div class="panel-body" style="overflow-y: auto; background-color: #f8fafc;">
+                
+                <!-- Quick Report -->
+                <div class="dashboard-section">
+                    <h3>BÁO CÁO NHANH (QUICK REPORT)</h3>
+                    <div class="quick-stats-grid">
+                        <div class="quick-stat-card">
+                            <div class="quick-stat-icon icon-blue"><i class="ph ph-squares-four"></i></div>
+                            <div class="quick-stat-content">
+                                <span class="stat-label">Tổng Ổ Gà:</span>
+                                <span class="stat-value" id="resCount">--</span>
+                            </div>
+                        </div>
+                        <div class="quick-stat-card">
+                            <div class="quick-stat-icon icon-green"><i class="ph ph-square"></i></div>
+                            <div class="quick-stat-content">
+                                <span class="stat-label">Diện Tích (px²):</span>
+                                <span class="stat-value" id="resArea">--</span>
+                            </div>
+                        </div>
+                        <div class="quick-stat-card">
+                            <div class="quick-stat-icon icon-purple"><i class="ph ph-target"></i></div>
+                            <div class="quick-stat-content">
+                                <span class="stat-label">Độ tin cậy:</span>
+                                <span class="stat-value" id="resConf">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pothole Area Analysis -->
+                <div class="dashboard-section">
+                    <h3>PHÂN TÍCH DIỆN TÍCH Ổ GÀ (POTHOLE AREA ANALYSIS)</h3>
+                    
+                    <!-- Chart Box -->
+                    <div class="dashboard-chart-box" id="chartContainer">
+                        <p class="placeholder-text" id="chartPlaceholderText" style="text-align: center; color: #64748b; font-size: 0.85rem;">Biểu đồ cập nhật thời gian thực (Real time updating chart)</p>
+                        <div class="area-chart-container" style="width: 100%; max-width: 100%; box-sizing: border-box; position: relative;">
+                            <canvas id="potholeChart" style="display:none; width:100% !important; max-width:100%; max-height:240px;"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Statistics Grid below chart -->
+                    <div id="chartStats" class="statistics-container" style="display:none;">
+                        <div class="statistics-card">
+                            <div class="stat-header-row" style="color: #3b82f6;">
+                                <i class="ph ph-stack"></i>
+                                <span class="stat-label">Tổng số ổ gà</span>
+                            </div>
+                            <span class="stat-val" id="statCount">--</span>
+                        </div>
+                        <div class="statistics-card">
+                            <div class="stat-header-row" style="color: #22c55e;">
+                                <i class="ph ph-chart-pie-slice"></i>
+                                <span class="stat-label">Tổng diện tích</span>
+                            </div>
+                            <span class="stat-val"><span id="statTotalArea">--</span> px²</span>
+                        </div>
+                        <div class="statistics-card">
+                            <div class="stat-header-row" style="color: #f59e0b;">
+                                <i class="ph ph-trend-up"></i>
+                                <span class="stat-label">Diện tích lớn nhất</span>
+                            </div>
+                            <span class="stat-val"><span id="statMaxArea">--</span> px²</span>
+                        </div>
+                        <div class="statistics-card">
+                            <div class="stat-header-row" style="color: #6366f1;">
+                                <i class="ph ph-chart-bar"></i>
+                                <span class="stat-label">Diện tích trung bình</span>
+                            </div>
+                            <span class="stat-val"><span id="statAvgArea">--</span> px²</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Prediction -->
+                <div class="dashboard-section">
+                    <h3>DỰ ĐOÁN MỨC ĐỘ NGUY HIỂM (RISK PREDICTION)</h3>
+                    <div class="risk-bar-container">
+                        <span class="risk-label" style="color: #1e293b;">Thấp</span>
+                        <div class="risk-gradient-bar">
+                            <div class="risk-marker" id="riskMarker" style="left: 0%;"></div>
+                        </div>
+                        <span class="risk-label" style="color: #1e293b;">Cao</span>
+                    </div>
+                    <div class="risk-list" id="riskList" style="border-radius: 6px;">
+                        <div class="risk-item empty-risk">Chưa có dữ liệu phân tích</div>
+                    </div>
+                </div>
+
+                <button class="btn-download-full">TẢI BÁO CÁO (DOWNLOAD REPORT)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Xóa Footer theo yêu cầu -->
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Hệ thống đang xử lý...</p>
+    </div>
+
+    <!-- Chatbot Integration -->
+    <div id="chatFab" class="chatbot-fab">
+        <i class="ph ph-chat-circle-dots"></i>
+    </div>
+
+    <div id="chatWindow" class="chat-window">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <h3>TRỢ LÝ AI</h3>
+                <p>Pothole Segmentation Assistant</p>
+            </div>
+            <div class="chat-header-actions">
+                <button id="chatClearBtn" class="chat-btn" title="Xóa lịch sử"><i class="ph ph-trash"></i></button>
+                <button id="chatCloseBtn" class="chat-btn" title="Đóng"><i class="ph ph-x"></i></button>
+            </div>
+        </div>
+        <div id="chatBody" class="chat-body">
+            <div class="chat-message bot">
+                Xin chào! Tôi là Trợ lý AI. Tôi có thể giúp bạn tìm hiểu về hệ thống phân vùng ổ gà, kết quả dự đoán và cách sử dụng website.
+            </div>
+        </div>
+        <div id="chatStatus" class="chat-status">Trợ lý AI đang hoạt động</div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Nhập câu hỏi...">
+            <button id="chatSendBtn" class="chat-send-btn"><i class="ph ph-paper-plane-right"></i></button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}?v=2"></script>
+</body>
+</html>

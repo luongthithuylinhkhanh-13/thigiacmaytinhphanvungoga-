@@ -1,0 +1,552 @@
+:root {
+    --bg-dark: #3b5998; /* Fallback for gradient */
+    --panel-bg: #e2e8f0;
+    --panel-border: #cbd5e1;
+    --text-dark: #1e293b;
+    --text-light: #f8fafc;
+    --primary-blue: #3b82f6;
+    --btn-blue: #4f46e5;
+    --btn-gray: #64748b;
+    --btn-red: #ef4444;
+    --danger: #dc2626;
+    --warning: #eab308;
+    --success: #22c55e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background: linear-gradient(90deg, #075b9f 0%, #168bc0 50%, #159b73 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 15px 30px;
+    background: linear-gradient(90deg, #075b9f 0%, #168bc0 50%, #159b73 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.nav-brand h1 {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.nav-brand p {
+    font-size: 0.8rem;
+    color: #bfdbfe;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 25px; /* Tăng khoảng cách các nút menu */
+    margin-left: 20px;
+}
+
+.nav-menu a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.nav-menu a:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.nav-menu a.active {
+    background-color: #22c55e;
+}
+
+.logo-box {
+    background: white;
+    color: #dc2626;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 4px;
+}
+
+/* Main App Layout */
+.app-container {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 15px;
+    padding: 20px;
+    flex: 1;
+}
+
+/* Panels */
+.panel {
+    background: #d9e0e8; /* Xám xanh nhạt */
+    border-radius: 10px;
+    border: 1px solid #ffffff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.panel-header {
+    background: transparent;
+    padding: 15px;
+    text-align: center;
+    border-bottom: 2px solid #bfdbfe;
+}
+
+.panel-header h2 {
+    font-size: 1.1rem;
+    color: #1e293b; /* Đen/xám đậm */
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.panel-header .subtitle {
+    font-size: 0.75rem;
+    color: #475569;
+}
+
+.panel-body {
+    padding: 15px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.workspace-body {
+    background: #dce6f2;
+    padding: 15px;
+}
+
+.image-container {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    background: #39424c; /* Nền xám xanh đậm giống demo */
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.empty-state {
+    text-align: center;
+    color: #e2e8f0; /* Trắng xám sáng */
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 10px;
+}
+
+#displayImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Middle Panel - Controls */
+.control-row {
+    display: flex;
+    gap: 10px;
+}
+
+.model-selection, .upload-section {
+    flex: 1;
+}
+
+h3 {
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.radio-group {
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    border-radius: 4px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 0.85rem;
+}
+
+.radio-group label.disabled {
+    color: #94a3b8;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: white;
+    width: 100%;
+    transition: opacity 0.2s;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.btn-blue, .btn-gray { 
+    background: linear-gradient(90deg, #1685d8, #258fe8); 
+} /* Upload và Segment */
+.btn-red { background: #e53935; }
+.btn-download { background: #4f46e5; margin-top: auto; }
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Parameters */
+.parameters-section {
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.slider-group {
+    margin-bottom: 10px;
+}
+
+.slider-group label {
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.slider-row input {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, #2f80ed, #22c55e, #eab308, #ef4444);
+    outline: none;
+}
+
+.slider-row input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #2f80ed;
+    cursor: pointer;
+}
+
+.slider-row span {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* Status Flow */
+.status-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    gap: 5px;
+}
+/* For simplicity, integrating status flow inside middle panel horizontally */
+.status-flow {
+    position: static;
+    transform: none;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+    background: #ffffff;
+    border-radius: 4px;
+    border: 1px solid #bfdbfe;
+}
+
+.status-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.7rem;
+    color: #94a3b8;
+}
+
+.status-step.active {
+    color: #10b981;
+}
+
+.status-step i {
+    font-size: 1.5rem;
+}
+
+.status-arrow {
+    color: #94a3b8;
+    align-self: center;
+}
+
+/* Input Summary */
+.summary-content {
+    display: flex;
+    gap: 10px;
+    background: #ffffff;
+    padding: 10px;
+    border: 1px solid #bfdbfe;
+    border-radius: 4px;
+}
+
+.summary-thumb {
+    width: 80px;
+    height: 60px;
+    background: #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.summary-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thumb-empty {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+.summary-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+.detail-row input {
+    width: 60%;
+    border: 1px solid #cbd5e1;
+    background: white;
+    padding: 2px 5px;
+    font-size: 0.75rem;
+}
+
+/* Right Panel - Analytics */
+.quick-stats {
+    display: flex;
+    gap: 5px;
+}
+
+.stat-box {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    border-radius: 4px;
+    padding: 10px 5px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #0f4c81;
+}
+
+.chart-placeholder {
+    height: 120px;
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 10px;
+    position: relative;
+}
+
+.placeholder-text {
+    position: absolute;
+    top: 10px;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.mock-bars {
+    display: flex;
+    gap: 15px;
+    height: 100%;
+    align-items: flex-end;
+}
+
+.bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.bar {
+    width: 40px;
+    border-radius: 2px 2px 0 0;
+}
+
+.bar.red { background: linear-gradient(to top, #7f1d1d, #ef4444); }
+.bar.yellow { background: linear-gradient(to top, #713f12, #eab308); }
+.bar.green { background: linear-gradient(to top, #14532d, #22c55e); }
+.bar-col span { font-size: 0.7rem; }
+
+/* Risk Bar */
+.risk-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.risk-gradient-bar {
+    flex: 1;
+    height: 8px;
+    background: linear-gradient(to right, #22c55e, #eab308, #f97316, #ef4444);
+    border-radius: 4px;
+    position: relative;
+}
+
+.risk-marker {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border: 2px solid #1e293b;
+    border-radius: 50%;
+    top: -2px;
+    transform: translateX(-50%);
+    transition: left 0.3s;
+}
+
+.risk-label {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.risk-list {
+    background: #ffffff;
+    border: 1px solid #bfdbfe;
+    padding: 5px;
+    font-size: 0.8rem;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.risk-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px;
+}
+
+.risk-item.high { background: #fca5a5; }
+.risk-item.medium { background: #fef08a; }
+.risk-item.low { background: #bbf7d0; }
+
+.empty-risk {
+    text-align: center;
+    color: #94a3b8;
+    padding-top: 20px;
+}
+
+/* Footer */
+.footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.8rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    background: rgba(15, 23, 42, 0.5);
+}
+
+.footer-contact {
+    display: flex;
+    gap: 20px;
+}
+
+.hidden { display: none !important; }
+
+/* Loading */
+.loading-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    color: white;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }

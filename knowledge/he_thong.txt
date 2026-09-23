@@ -1,0 +1,20 @@
+Giới thiệu Hệ thống Phân vùng Ổ gà (Pothole Segmentation System):
+
+Kiến trúc hệ thống:
+- Giao diện người dùng (Frontend): HTML5, CSS3, JavaScript (Fetch API, Chatbot UI tương tác).
+- Máy chủ (Backend): Python Flask Web Server.
+- Mô hình Thị giác máy tính (AI Core): YOLOv8-Seg (Ultralytics YOLOv8 Instance Segmentation).
+- Trợ lý AI (Chatbot RAG Local): Tích hợp RAG (Retrieval-Augmented Generation) local chạy qua LM Studio server (port 1234), không sử dụng API key cloud hay dịch vụ trả phí.
+
+Quy trình hoạt động phân vùng ảnh:
+1. Người dùng tải ảnh mặt đường lên qua giao diện website.
+2. Hệ thống chuyển ảnh tới mô hình YOLOv8-Seg (`models/best.pt`).
+3. YOLOv8-Seg phát hiện ổ gà, trích xuất Bounding Box, Confidence Score và Polygon Segmentation Mask.
+4. Hệ thống tính tổng số ổ gà, confidence trung bình, và diện tích (tổng số pixel của mask).
+5. Trả về ảnh kết quả đè mask (overlay) cùng đánh giá mức độ nguy hiểm (Risk Level).
+
+Các thuật ngữ và tham số kỹ thuật:
+- Confidence Threshold (Ngưỡng tin cậy): Mức xác suất tối thiểu (từ 0 đến 1) để chấp nhận một phát hiện là ổ gà.
+- NMS / IoU Threshold (Non-Maximum Suppression): Ngưỡng loại bỏ các hộp phát hiện trùng lặp trên cùng một ổ gà.
+- Mask (Mặt nạ phân vùng): Tập hợp các pixel tô màu chính xác hình dạng ổ gà trên ảnh.
+- mAP50 / mAP50-95: Các chỉ số độ chính xác trung bình của mô hình YOLOv8 trên tập kiểm thử validation.
