@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Giới thiệu - PotholeSeg{% endblock %}
+
+{% block body %}
+{% include "partials/navbar.html" %}
+
+<div class="page-public">
+    <div class="page-banner">
+        <h1>Giới thiệu PotholeSeg</h1>
+        <p>Hệ thống phát hiện và phân vùng ổ gà trên mặt đường sử dụng AI</p>
+    </div>
+    <div class="page-body">
+        <h2>Về dự án</h2>
+        <p>PotholeSeg là đề tài nghiên cứu "Xây dựng mô hình thị giác máy tính phân vùng ổ gà trên mặt đường" sử dụng mô hình YOLOv8 Segmentation để phát hiện và phân vùng chính xác các ổ gà trên bề mặt đường.</p>
+        <p>Hệ thống cho phép người dùng tải lên ảnh hoặc video mặt đường, sau đó sử dụng mô hình AI để phân tích, phát hiện vị trí và phân vùng pixel-level các ổ gà, đồng thời cung cấp thông tin chi tiết như số lượng, diện tích, độ tin cậy.</p>
+
+        <h2>Công nghệ sử dụng</h2>
+        <p><strong>Mô hình AI:</strong> YOLOv8 Segmentation (Ultralytics) — mô hình deep learning tiên tiến cho bài toán instance segmentation, cho phép phân vùng chính xác từng đối tượng ổ gà trong ảnh.</p>
+        <p><strong>Backend:</strong> Python Flask — framework web nhẹ, linh hoạt và dễ triển khai.</p>
+        <p><strong>Database:</strong> SQLite — cơ sở dữ liệu nhẹ, phù hợp cho ứng dụng demo và nghiên cứu.</p>
+        <p><strong>Frontend:</strong> HTML, CSS, JavaScript — giao diện hiện đại, responsive, dễ sử dụng.</p>
+
+        <h2>Tính năng chính</h2>
+        <p>• Phát hiện và phân vùng ổ gà trên ảnh với segmentation mask.</p>
+        <p>• Phân tích video frame-by-frame.</p>
+        <p>• Thống kê chi tiết: số lượng, diện tích, confidence, thời gian xử lý.</p>
+        <p>• Lưu lịch sử phân tích và xuất báo cáo.</p>
+        <p>• Biểu đồ thống kê trực quan.</p>
+        <p>• Quản lý tài khoản người dùng.</p>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>&copy; 2024 PotholeSeg</p>
+</footer>
+{% endblock %}

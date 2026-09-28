@@ -1,0 +1,1193 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Nhận diện ảnh - PotholeSeg{% endblock %}
+
+{% block head_extra %}
+{{ super() }}
+<style>
+/* Reset & General Variables */
+:root {
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --success: #10b981;
+    --success-light: #f0fdf4;
+    --warning: #f59e0b;
+    --warning-light: #fffbeb;
+    --danger: #ef4444;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --bg-card: #ffffff;
+    --bg-body: #f8fafc;
+}
+
+/* Page Header */
+.page-header-new {
+    margin-bottom: 24px;
+}
+.page-header-new h1 {
+    font-size: 24px;
+    color: var(--text-main);
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.page-header-new p {
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
+/* Card Style */
+.card-new {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(15,45,90,.03);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+/* Input Section */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+}
+.tab-btn {
+    padding: 10px 24px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+.tab-btn:hover:not(.active) {
+    background: #f1f5f9;
+    color: var(--text-main);
+}
+.tab-btn.active {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+/* Upload Zone */
+.upload-zone-modern {
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px;
+    padding: 48px 24px;
+    text-align: center;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.upload-zone-modern.dragover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+.upload-icon-new {
+    width: 64px;
+    height: 64px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 16px;
+}
+.upload-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+.upload-subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+.file-formats {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 16px;
+    font-weight: 500;
+}
+.paste-hint {
+    margin-top: 24px;
+    font-size: 14px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+.url-input-group { display: flex; gap: 12px; margin-top: 16px; }
+.url-input { flex: 1; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; transition: 0.2s; }
+.url-input:focus { border-color: var(--primary); }
+
+/* Preview */
+.preview-area { display: none; border: 1px solid var(--border); border-radius: 16px; padding: 24px; background: #f8fafc; text-align: center; }
+.preview-image-container { background: var(--border); border-radius: 12px; padding: 8px; margin-bottom: 16px; display: inline-block; max-width: 100%; }
+.preview-img { max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; }
+
+/* Processing Overlay */
+.processing-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.9); z-index: 9999;
+    display: none; align-items: center; justify-content: center;
+}
+.processing-overlay.active { display: flex; }
+.processing-box { background: white; padding: 32px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center; width: 400px; }
+.spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-top: 20px; }
+.progress { height: 100%; background: var(--primary); transition: width 0.3s ease; }
+
+/* =========================================================
+   REPORT DASHBOARD STYLES (AI REPORT)
+   ========================================================= */
+.analysis-report {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(15,23,42,0.04);
+    padding: 24px 24px 40px;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Header */
+.report-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+.report-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.report-title h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.report-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 4px;
+    margin-left: 32px; /* indent past icon */
+}
+.report-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+.report-meta-row span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.badge-status {
+    background: #d1fae5;
+    color: #059669;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.report-actions {
+    display: flex;
+    gap: 10px;
+}
+.btn-outline-blue {
+    background: #ffffff;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-primary-blue {
+    background: #2563eb;
+    border: 1px solid #2563eb;
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-secondary-gray {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* 5 Stat Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+}
+@media (max-width: 1024px) {
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.stat-card-new {
+    height: 95px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #ffffff;
+}
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+.stat-icon.red { background: #fee2e2; color: #ef4444; }
+.stat-icon.purple { background: #f3e8ff; color: #a855f7; }
+.stat-icon.orange { background: #ffedd5; color: #f97316; }
+.stat-icon.green { background: #dcfce7; color: #22c55e; }
+.stat-icon.blue { background: #dbeafe; color: #3b82f6; }
+.stat-info { display: flex; flex-direction: column; justify-content: center; }
+.stat-value {
+    font-size: 27px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.2;
+}
+.stat-label {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+/* Section Title */
+.section-title-new {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.section-title-small {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Image Viewer */
+.viewer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+@media (max-width: 992px) {
+    .viewer-grid { grid-template-columns: 1fr; }
+}
+.viewer-box-new {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+}
+.viewer-header-new {
+    height: 42px;
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+}
+.viewer-header-new .bx {
+    color: var(--primary);
+    margin-right: 6px;
+    font-size: 16px;
+    vertical-align: middle;
+}
+.viewer-content-new {
+    background: #f8fafc;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.viewer-content-new img {
+    width: 100%;
+    height: 330px;
+    object-fit: contain;
+}
+.empty-image-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 330px;
+    color: #94a3b8;
+    font-size: 14px;
+}
+.empty-image-state i {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+.segmented-control {
+    display: inline-flex;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 2px;
+}
+.seg-btn {
+    padding: 4px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: #475569;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.seg-btn.active {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Table */
+.table-responsive {
+    overflow-x: auto;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+.data-table-new {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+.data-table-new th {
+    background: #f8fafc;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+}
+.data-table-new td {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #0f172a;
+    border-bottom: 1px solid var(--border);
+    height: 44px;
+}
+.data-table-new tbody tr:last-child td {
+    border-bottom: none;
+}
+.badge-conf {
+    background: #d1fae5;
+    color: #059669;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* Charts */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+@media (max-width: 768px) {
+    .charts-grid { grid-template-columns: 1fr; }
+}
+.chart-card-new {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    background: #ffffff;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+}
+.chart-card-new canvas {
+    flex: 1;
+    max-height: 220px;
+}
+
+/* Info Cards */
+.info-grid-new {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+@media (max-width: 768px) {
+    .info-grid-new { grid-template-columns: 1fr; }
+}
+.info-card-new {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    background: #f8fafc;
+}
+.info-table {
+    width: 100%;
+    font-size: 13px;
+    border-collapse: collapse;
+}
+.info-table td {
+    padding: 8px 0;
+}
+.info-table td:first-child,
+.info-table td:nth-child(3) {
+    color: #64748b;
+    width: 25%;
+}
+.info-table td:nth-child(2),
+.info-table td:last-child {
+    color: #0f172a;
+    font-weight: 500;
+    text-align: right;
+    width: 25%;
+}
+
+/* Summary */
+.summary-card {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 14px;
+    color: #1e3a8a;
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+.summary-card i {
+    font-size: 20px;
+    color: #3b82f6;
+    margin-top: 2px;
+}
+
+/* Empty state */
+.no-detection { text-align: center; padding: 40px 20px; background: var(--success-light); border: 1px solid #bbf7d0; border-radius: 12px; margin-bottom: 24px; }
+.no-detection i { font-size: 48px; color: var(--success); margin-bottom: 16px; }
+.no-detection h3 { color: #166534; font-size: 20px; margin-bottom: 8px; }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header-new">
+    <h1><i class='bx bx-image-alt text-primary'></i> Nhận diện ảnh</h1>
+    <p>Tải ảnh mặt đường để phát hiện và phân tích chi tiết ổ gà bằng AI</p>
+</div>
+
+{% if demo_mode %}
+<div style="background: var(--warning-light); color: #d97706; padding: 12px 16px; border-radius: 10px; margin-bottom: 24px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+    <i class='bx bx-info-circle'></i> Đang chạy ở chế độ DEMO - Kết quả minh họa (cần best.pt cho kết quả thật)
+</div>
+{% endif %}
+
+<!-- INPUT SECTION -->
+<div class="card-new" id="inputSection">
+    <div class="tabs">
+        <button class="tab-btn active" id="tabUploadBtn" onclick="switchTab('upload')"><i class='bx bx-upload'></i> Tải ảnh từ máy</button>
+        <button class="tab-btn" id="tabUrlBtn" onclick="switchTab('url')"><i class='bx bx-link'></i> Tải ảnh từ URL</button>
+    </div>
+
+    <!-- Upload Zone -->
+    <div id="uploadView">
+        <div class="upload-zone-modern" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon-new"><i class='bx bx-cloud-upload'></i></div>
+            <div class="upload-title">Kéo thả ảnh vào đây</div>
+            <div class="upload-subtitle">hoặc</div>
+            <button class="btn btn-primary" style="border-radius: 8px; padding: 8px 20px;">Chọn ảnh từ máy tính</button>
+            <div class="file-formats">Hỗ trợ: JPG, JPEG, PNG, WEBP, BMP, TIFF (Tối đa 20MB)</div>
+            <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.webp,.bmp,.tif,.tiff,image/*" hidden>
+        </div>
+        <div class="paste-hint">
+            <i class='bx bx-clipboard'></i> Bạn cũng có thể dán ảnh trực tiếp bằng <strong>Ctrl + V</strong>
+        </div>
+    </div>
+
+    <!-- URL Zone -->
+    <div id="urlView" style="display: none; padding: 20px 0;">
+        <label style="font-weight: 600; font-size: 14px; color: var(--text-main);">Nhập URL hình ảnh công khai:</label>
+        <div class="url-input-group">
+            <input type="url" id="urlInput" class="url-input" placeholder="https://example.com/image.jpg">
+            <button class="btn btn-primary" id="urlSubmitBtn" style="border-radius: 10px;" onclick="handleUrlSubmit()">Tải ảnh</button>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">Hệ thống sẽ tải ảnh về để phân tích. Chỉ hỗ trợ HTTP/HTTPS (Không hỗ trợ mạng nội bộ).</p>
+    </div>
+</div>
+
+<!-- PREVIEW AREA -->
+<div class="card-new" id="previewArea" style="display: none; text-align: center;">
+    <h3 style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 16px;">XÁC NHẬN ẢNH ĐẦU VÀO</h3>
+    <div class="preview-image-container">
+        <img id="previewImg" class="preview-img" src="" alt="Preview">
+    </div>
+    <div class="preview-info" id="previewFileName">road.jpg</div>
+    <div class="preview-meta" id="previewFileMeta">1920 × 1080 • 2.4 MB</div>
+    
+    <div class="preview-actions">
+        <button class="btn btn-outline" style="border-radius: 8px;" onclick="resetInput()"><i class='bx bx-x'></i> Hủy bỏ</button>
+        <button class="btn btn-primary" style="border-radius: 8px;" id="analyzeBtn" onclick="analyzeImage()">
+            <i class='bx bx-analyse'></i> Bắt đầu phân tích AI
+        </button>
+    </div>
+    <div id="errorBox" style="display: none; margin-top: 16px; padding: 12px; background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; color: #dc2626; text-align: left; font-size: 14px;">
+        <strong style="display: block; margin-bottom: 4px;"><i class='bx bx-error-circle'></i> Lỗi phân tích</strong>
+        <span id="errorMessage"></span>
+    </div>
+</div>
+
+<!-- PROCESSING OVERLAY -->
+<div class="processing-overlay" id="processingOverlay">
+    <div class="processing-box">
+        <div class="spinner"></div>
+        <h3 style="margin-top: 20px; color: var(--text-main); font-size: 18px;">Đang phân tích ảnh...</h3>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 8px;">YOLOv8 Segmentation đang xử lý</p>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar" style="width: 0%"></div>
+        </div>
+    </div>
+</div>
+
+<!-- RESULT AREA / REPORT -->
+<div id="resultArea" style="display: none;">
+    <div class="analysis-report">
+        
+        <!-- Header -->
+        <div class="report-header-top">
+            <div class="report-title">
+                <h2><i class='bx bx-file-find text-primary'></i> BÁO CÁO PHÂN TÍCH Ổ GÀ (AI REPORT)</h2>
+                <span class="badge-status"><i class='bx bx-check'></i> HOÀN THÀNH</span>
+            </div>
+            <div class="report-actions">
+                <button class="btn-outline-blue" onclick="resetInput()"><i class='bx bx-refresh'></i> Ảnh khác</button>
+                <button class="btn-primary-blue" onclick="downloadResult()"><i class='bx bx-download'></i> Tải kết quả</button>
+                <button class="btn-secondary-gray" onclick="exportPDF()" id="exportPdfBtn"><i class='bx bxs-file-pdf'></i> Xuất báo cáo</button>
+            </div>
+        </div>
+        <div class="report-subtitle">Phân tích ảnh mặt đường bằng trí tuệ nhân tạo</div>
+        
+        <div class="report-meta-row">
+            <span><i class='bx bx-image'></i> <strong id="repFilename">...</strong></span>
+            <span>|</span>
+            <span><i class='bx bx-brain'></i> YOLOv8 Segmentation</span>
+            <span>|</span>
+            <span><i class='bx bx-calendar'></i> <strong id="repTime">...</strong></span>
+        </div>
+
+        <!-- 5 Stat Cards -->
+        <div class="stats-grid">
+            <div class="stat-card-new">
+                <div class="stat-icon red"><i class='bx bx-target-lock'></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="statCount">N/A</div>
+                    <div class="stat-label">Ổ gà phát hiện</div>
+                </div>
+            </div>
+            <div class="stat-card-new">
+                <div class="stat-icon purple"><i class='bx bx-tachometer'></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="statConf">N/A</div>
+                    <div class="stat-label">Độ tin cậy trung bình</div>
+                </div>
+            </div>
+            <div class="stat-card-new">
+                <div class="stat-icon orange"><i class='bx bx-area'></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="statArea">N/A</div>
+                    <div class="stat-label">Tổng vùng hư hỏng</div>
+                </div>
+            </div>
+            <div class="stat-card-new">
+                <div class="stat-icon green"><i class='bx bx-pie-chart-alt-2'></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="statRatio">N/A</div>
+                    <div class="stat-label">Tỷ lệ ảnh hưởng</div>
+                </div>
+            </div>
+            <div class="stat-card-new">
+                <div class="stat-icon blue"><i class='bx bx-time-five'></i></div>
+                <div class="stat-info">
+                    <div class="stat-value" id="statTime">N/A</div>
+                    <div class="stat-label">Thời gian xử lý</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State (No detections) -->
+        <div id="noDetectionState" class="no-detection" style="display: none;">
+            <i class='bx bx-check-shield'></i>
+            <h3>Không phát hiện ổ gà</h3>
+            <p>Mô hình không tìm thấy vùng mặt đường nào bị hư hỏng trong bức ảnh này.</p>
+        </div>
+
+        <!-- Detected Content -->
+        <div id="detectedContent">
+            
+            <!-- Image Viewer -->
+            <div class="section-title-new"><i class='bx bx-image'></i> Trực quan hóa kết quả</div>
+            <div class="viewer-grid">
+                <!-- Original -->
+                <div class="viewer-box-new">
+                    <div class="viewer-header-new">
+                        <span><i class='bx bx-image-alt'></i> Ảnh gốc</span>
+                        <i class='bx bx-expand' style="cursor:pointer; color:#64748b;" onclick="toggleFullscreen(document.getElementById('viewOriginal'))"></i>
+                    </div>
+                    <div class="viewer-content-new">
+                        <div id="origEmpty" class="empty-image-state" style="display:none;">
+                            <i class='bx bx-image'></i>
+                            Chưa có ảnh hiển thị
+                        </div>
+                        <img id="viewOriginal" src="" alt="Original">
+                    </div>
+                </div>
+                <!-- Result -->
+                <div class="viewer-box-new">
+                    <div class="viewer-header-new">
+                        <span><i class='bx bx-image'></i> Kết quả AI</span>
+                        <div class="segmented-control">
+                            <button class="seg-btn active" onclick="switchViewerTab('overlay', this)">Overlay</button>
+                            <button class="seg-btn" onclick="switchViewerTab('mask', this)">Mask</button>
+                        </div>
+                    </div>
+                    <div class="viewer-content-new">
+                        <div id="resEmpty" class="empty-image-state" style="display:none;">
+                            <i class='bx bx-image'></i>
+                            Chưa có ảnh hiển thị
+                        </div>
+                        <img id="viewResult" src="" alt="Result">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Table -->
+            <div class="section-title-small"><i class='bx bx-list-ul'></i> Chi tiết đối tượng phát hiện</div>
+            <div class="table-responsive">
+                <table class="data-table-new" id="detailsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Loại</th>
+                            <th>Độ tin cậy</th>
+                            <th>Diện tích (px²)</th>
+                            <th>Tỷ lệ ảnh (%)</th>
+                            <th>Bounding Box (X1, Y1, X2, Y2)</th>
+                            <th>Tâm (X, Y)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows rendered via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card-new">
+                    <div class="section-title-small" style="font-size:14px;"><i class='bx bx-bar-chart'></i> Độ tin cậy của các đối tượng</div>
+                    <canvas id="confChart"></canvas>
+                </div>
+                <div class="chart-card-new">
+                    <div class="section-title-small" style="font-size:14px;"><i class='bx bx-line-chart'></i> Diện tích vùng hư hỏng</div>
+                    <canvas id="areaChart"></canvas>
+                </div>
+            </div>
+            
+        </div> <!-- End detectedContent -->
+
+        <!-- Info Cards -->
+        <div class="info-grid-new">
+            <div class="info-card-new">
+                <div class="section-title-small" style="font-size:14px;"><i class='bx bx-image'></i> Thông tin ảnh đầu vào</div>
+                <table class="info-table">
+                    <tr>
+                        <td>Tên file:</td>
+                        <td id="infoFilename">...</td>
+                        <td>Dung lượng:</td>
+                        <td id="infoSize">...</td>
+                    </tr>
+                    <tr>
+                        <td>Độ phân giải:</td>
+                        <td id="infoResolution">...</td>
+                        <td>Định dạng:</td>
+                        <td>JPG</td>
+                    </tr>
+                    <tr>
+                        <td>Tổng số pixel:</td>
+                        <td id="infoTotalPixels">...</td>
+                        <td>Màu sắc:</td>
+                        <td>RGB</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="info-card-new">
+                <div class="section-title-small" style="font-size:14px;"><i class='bx bx-cog'></i> Thông tin mô hình</div>
+                <table class="info-table">
+                    <tr>
+                        <td>Mô hình:</td>
+                        <td id="modName">YOLOv8 Segmentation</td>
+                        <td>Confidence Threshold:</td>
+                        <td id="modConf">...</td>
+                    </tr>
+                    <tr>
+                        <td>Task:</td>
+                        <td id="modTask">Instance Segmentation</td>
+                        <td>IoU Threshold:</td>
+                        <td id="modIou">...</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-card">
+            <i class='bx bx-sparkles'></i>
+            <div>
+                <strong style="display:block; margin-bottom:4px;">Tóm tắt phân tích</strong>
+                <span id="reportSummaryText">Hệ thống đang phân tích...</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+let currentMode = 'upload'; 
+let selectedFile = null;
+let selectedUrl = '';
+let resultData = null; 
+let confChartInstance = null;
+let areaChartInstance = null;
+let currentZoom = { viewOriginal: 1, viewResult: 1 };
+
+const inputSection = document.getElementById('inputSection');
+const previewArea = document.getElementById('previewArea');
+const resultArea = document.getElementById('resultArea');
+const processingOverlay = document.getElementById('processingOverlay');
+const analyzeBtn = document.getElementById('analyzeBtn');
+
+// Tabs switching
+function switchTab(mode) {
+    currentMode = mode;
+    if (mode === 'upload') {
+        document.getElementById('tabUploadBtn').classList.add('active');
+        document.getElementById('tabUrlBtn').classList.remove('active');
+        document.getElementById('uploadView').style.display = 'block';
+        document.getElementById('urlView').style.display = 'none';
+    } else {
+        document.getElementById('tabUploadBtn').classList.remove('active');
+        document.getElementById('tabUrlBtn').classList.add('active');
+        document.getElementById('uploadView').style.display = 'none';
+        document.getElementById('urlView').style.display = 'block';
+    }
+}
+
+// Drag & Drop / Paste
+const uploadZone = document.getElementById('uploadZone');
+uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => { uploadZone.classList.remove('dragover'); });
+uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault(); uploadZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+});
+document.getElementById('fileInput').addEventListener('change', (e) => {
+    if (e.target.files.length > 0) handleFile(e.target.files[0]);
+});
+document.addEventListener('paste', (e) => {
+    if (previewArea.style.display === 'block') return;
+    if (document.activeElement === document.getElementById('urlInput')) return;
+    if (e.clipboardData && e.clipboardData.files.length > 0) {
+        const file = e.clipboardData.files[0];
+        if (file.type.startsWith('image/')) handleFile(file);
+    }
+});
+
+// URL Submit
+function handleUrlSubmit() {
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url) { alert("Vui lòng nhập URL hình ảnh."); return; }
+    if (!url.startsWith('http://') && !url.startsWith('https://')) { alert("Chỉ hỗ trợ URL bắt đầu bằng http:// hoặc https://"); return; }
+    selectedFile = null; selectedUrl = url;
+    document.getElementById('previewImg').src = url;
+    document.getElementById('previewFileName').textContent = url;
+    document.getElementById('previewFileMeta').textContent = "Ảnh từ URL";
+    showPreview();
+}
+
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024; const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function handleFile(file) {
+    const validExts = ['jpg', 'jpeg', 'png', 'webp', 'bmp', 'tif', 'tiff'];
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/bmp', 'image/tiff'];
+    const ext = file.name.split('.').pop().toLowerCase();
+    
+    if (!validExts.includes(ext) && !validTypes.includes(file.type)) {
+        alert('File không được hỗ trợ. Vui lòng chọn ảnh hợp lệ.'); return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+        alert('Ảnh vượt quá dung lượng cho phép (20MB).'); return;
+    }
+
+    selectedFile = file; selectedUrl = '';
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = function() {
+            document.getElementById('previewFileMeta').textContent = `${this.width} × ${this.height} • ${formatBytes(file.size)}`;
+        };
+        img.src = e.target.result;
+        document.getElementById('previewImg').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    document.getElementById('previewFileName').textContent = file.name;
+    document.getElementById('previewFileMeta').textContent = formatBytes(file.size);
+    showPreview();
+}
+
+function showPreview() {
+    inputSection.style.display = 'none';
+    previewArea.style.display = 'block';
+    resultArea.style.display = 'none';
+    analyzeBtn.disabled = false;
+    document.getElementById('errorBox').style.display = 'none';
+}
+
+function resetInput() {
+    selectedFile = null; selectedUrl = '';
+    document.getElementById('fileInput').value = ''; document.getElementById('urlInput').value = '';
+    inputSection.style.display = 'block'; previewArea.style.display = 'none'; resultArea.style.display = 'none';
+    
+    // Reset zoom
+    currentZoom = { viewOriginal: 1, viewResult: 1 };
+    document.getElementById('viewOriginal').style.transform = `scale(1)`;
+    document.getElementById('viewResult').style.transform = `scale(1)`;
+}
+
+function showError(message) {
+    const errorBox = document.getElementById('errorBox');
+    document.getElementById('errorMessage').textContent = message;
+    errorBox.style.display = 'block';
+}
+
+async function analyzeImage() {
+    if (!selectedFile && !selectedUrl) { showError('Vui lòng chọn ảnh hoặc nhập URL!'); return; }
+    
+    document.getElementById('errorBox').style.display = 'none';
+    analyzeBtn.disabled = true;
+
+    const formData = new FormData();
+    if (selectedFile) formData.append('file', selectedFile);
+    else formData.append('image_url', selectedUrl);
+
+    formData.append('show_mask', 'true');
+    formData.append('show_contour', 'true');
+    formData.append('show_conf', 'true');
+    formData.append('conf_threshold', '0.5');
+
+    processingOverlay.classList.add('active');
+    let progress = 0;
+    const progressBar = document.getElementById('progressBar');
+    const progressInterval = setInterval(() => {
+        progress = Math.min(progress + Math.random() * 20, 95);
+        progressBar.style.width = progress + '%';
+    }, 300);
+
+    try {
+        const response = await fetch('/detect-image', { method: 'POST', body: formData });
+        let data;
+        try { data = await response.json(); } catch (e) { throw new Error(`Server trả về phản hồi không hợp lệ (HTTP ${response.status})`); }
+        
+        console.log("===== SERVER RESPONSE =====");
+        console.log(data);
+        console.log(JSON.stringify(data, null, 2));
+
+        if (!response.ok || !data.success) throw new Error(data.error || data.message || `Lỗi máy chủ (HTTP ${response.status})`);
+        
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+
+        setTimeout(() => {
+            previewArea.style.display = 'none';
+            resultArea.style.display = 'block';
+            try {
+                renderReport(data);
+            } catch (renderError) {
+                console.error("Lỗi khi render báo cáo:", renderError);
+                showError("Đã có lỗi khi hiển thị báo cáo: " + renderError.message);
+            }
+            resultArea.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+
+    } catch (err) {
+        let msg = err.message;
+        if (msg.includes('Failed to fetch')) msg = 'Mất kết nối tới máy chủ. Vui lòng kiểm tra lại mạng hoặc máy chủ có thể đang khởi động lại.';
+        showError(msg);
+    } finally {
+        setTimeout(() => {
+            clearInterval(progressInterval);
+            progressBar.style.width = '0%';
+            processingOverlay.classList.remove('active');
+            analyzeBtn.disabled = false;
+        }, 300);
+    }
+}
+
+// Render Report Logic
+function renderReport(data) {
+    resultData = data;
+    
+    // Header
+    const now = new Date();
+    document.getElementById('repFilename').textContent = data.image_info?.filename || (selectedFile ? selectedFile.name : selectedUrl);
+    document.getElementById('repTime').textContent = now.toLocaleString('vi-VN');
+
+    // Check required fields
+    const requiredFields = ['pothole_count', 'average_confidence', 'total_damage_area', 'damage_percentage', 'processing_time', 'original_url', 'overlay_url', 'detections', 'image_info', 'speed'];
+    requiredFields.forEach(field => {
+        if (data[field] === undefined) {
+            console.error("Missing field:", field);
+        }
+    });
+
+    // Stats
+    document.getElementById('statCount').textContent = data.pothole_count !== undefined ? data.pothole_count : 'N/A';
+    document.getElementById('statConf').textContent = data.average_confidence !== undefined ? (data.average_confidence * 100).toFixed(1) + '%' : 'N/A';
+    document.getElementById('statArea').textContent = data.total_damage_area !== undefined ? data.total_damage_area.toLocaleString() + ' px²' : 'N/A';
+    document.getElementById('statRatio').textContent = data.damage_percentage !== undefined ? data.damage_percentage.toFixed(2) + '%' : 'N/A';
+    document.getElementById('statTime').textContent = data.processing_time !== undefined ? data.processing_time.toFixed(2) + 's' : 'N/A';
+
+    // Image Viewer
+    const imgOriginal = document.getElementById('viewOriginal');
+    const imgResult = document.getElementById('viewResult');
+    
+    imgOriginal.onerror = function() { console.error("IMAGE LOAD FAILED:", this.src); };
+    imgResult.onerror = function() { console.error("IMAGE LOAD FAILED:", this.src); };
+    
+    imgOriginal.src = data.original_url;
+    imgResult.src = data.overlay_url;
+    // Reset tabs
+    document.querySelectorAll('.seg-btn').forEach(t => t.classList.remove('active'));
+    document.querySelector('.seg-btn[onclick*="overlay"]').classList.add('active');
+
+    if (data.pothole_count === 0) {
+        document.getElementById('noDetectionState').style.display = 'block';
+        document.getElementById('detectedContent').style.display = 'none';
+        document.getElementById('reportSummaryText').textContent = "Hệ thống không phát hiện thấy vùng ổ gà nào trong ảnh. Tỷ lệ hư hỏng là 0%. Thời gian xử lý mất " + data.processing_time.toFixed(2) + " giây.";
+    } else {
+        document.getElementById('noDetectionState').style.display = 'none';
+        document.getElementById('detectedContent').style.display = 'block';
+        
+        // Render Table
+        const tbody = document.querySelector('#detailsTable tbody');
+        tbody.innerHTML = '';
+        data.detections.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>#${p.id}</strong></td>
+                <td>Pothole</td>
+                <td><span class="badge-conf">${(p.confidence * 100).toFixed(1)}%</span></td>
+                <td>${p.pixel_area ? p.pixel_area.toLocaleString() : 0}</td>
+                <td>${p.image_percentage ? p.image_percentage.toFixed(2) : 0}%</td>
+                <td style="font-family: monospace;">(${p.bbox.x1}, ${p.bbox.y1}, ${p.bbox.x2}, ${p.bbox.y2})</td>
+                <td style="font-family: monospace;">(${p.center.x}, ${p.center.y})</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Render Charts
+        try {
+            renderCharts(data.detections);
+        } catch(chartErr) {
+            console.error("Lỗi khi vẽ biểu đồ:", chartErr);
+        }
+
+        // Summary Text
+        const summary = `Phân tích hoàn tất. Hệ thống phát hiện <strong>${data.pothole_count}</strong> vùng ổ gà trong ảnh. Độ tin cậy trung bình đạt <strong>${(data.average_confidence * 100).toFixed(1)}%</strong>. Tổng vùng phân đoạn chiếm <strong>${data.damage_percentage.toFixed(2)}%</strong> (${data.total_damage_area.toLocaleString()} px²) diện tích ảnh. Thời gian xử lý AI là <strong>${(data.processing_time * 1000).toFixed(0)} ms</strong>.`;
+        document.getElementById('reportSummaryText').innerHTML = summary;
+    }
+
+    // Info Cards
+    document.getElementById('infoFilename').textContent = data.image_info?.filename || 'Unknown';
+    document.getElementById('infoResolution').textContent = data.image_info?.resolution || 'Unknown';
+    document.getElementById('infoTotalPixels').textContent = data.image_info?.total_pixels ? data.image_info.total_pixels.toLocaleString() + ' px' : 'Unknown';
+    document.getElementById('infoSize').textContent = data.image_info?.file_size_mb ? data.image_info.file_size_mb + ' MB' : 'Unknown';
+
+    if (data.model_info) {
+        document.getElementById('modName').textContent = data.model_info.name;
+        document.getElementById('modTask').textContent = data.model_info.task;
+        document.getElementById('modConf').textContent = data.model_info.confidence_threshold;
+        document.getElementById('modIou').textContent = data.model_info.iou_threshold;
+    }
+
+    // Performance
+    let pre = data.speed.preprocess || 0;
+    let inf = data.speed.inference || 0;
+    let post = data.speed.postprocess || 0;
+    let totalMs = pre + inf + post;
+    
+    if (totalMs > 0) {
+        document.getElementById('perfTotal').textContent = totalMs.toFixed(1) + ' ms';
+        document.getElementById('valPre').textContent = pre.toFixed(1) + ' ms';
+        document.getElementById('valInf').textContent = inf.toFixed(1) + ' ms';
+        document.getElementById('valPost').textContent = post.toFixed(1) + ' ms';
+        
+        document.getElementById('barPre').style.width = (pre / totalMs * 100) + '%';
+        document.getElementById('barInf').style.width = (inf / totalMs * 100) + '%';
+        document.getElementById('barPost').style.width = (post / totalMs * 100) + '%';
+    } else {
+        document.getElementById('perfTotal').textContent = 'N/A';
+        document.getElementById('barPre').style.width = '33.3%';
+        document.getElementById('barInf').style.width = '33.3%';
+        document.getElementById('barPost').style.width = '33.3%';
+    }
+}
+
+function renderCharts(potholes) {
+    const labels = potholes.map(p => `Pothole #${p.id}`);
+    const confData = potholes.map(p => p.confidence * 100);
+    const areaData = potholes.map(p => p.pixel_area);
+
+    if (confChartInstance) confChartInstance.destroy();
+    if (areaChartInstance) areaChartInstance.destroy();
+
+    const ctxConf = document.getElementById('confChart').getContext('2d');
+    confChartInstance = new Chart(ctxConf, {
+        type: 'bar',
+        data: { labels: labels, datasets: [{ label: 'Độ tin cậy (%)', data: confData, backgroundColor: '#3b82f6', borderRadius: 4 }] },
+        options: { scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } }
+    });
+
+    const ctxArea = document.getElementById('areaChart').getContext('2d');
+    areaChartInstance = new Chart(ctxArea, {
+        type: 'bar',
+        data: { labels: labels, datasets: [{ label: 'Diện tích (px²)', data: areaData, backgroundColor: '#10b981', borderRadius: 4 }] },
+        options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } }
+    });
+}
+
+function switchViewerTab(type, btn) {
+    document.querySelectorAll('.seg-btn').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    
+    const img = document.getElementById('viewResult');
+    if (type === 'overlay') {
+        img.src = resultData.overlay_url;
+    } else if (type === 'mask') {
+        img.src = resultData.mask_url;
+    }
+}
+
+function zoomImg(id, factor) {
+    currentZoom[id] *= factor;
+    // Limit zoom
+    if (currentZoom[id] < 0.5) currentZoom[id] = 0.5;
+    if (currentZoom[id] > 4) currentZoom[id] = 4;
+    document.getElementById(id).style.transform = `scale(${currentZoom[id]})`;
+}
+
+function toggleFullscreen(img) {
+    if (!document.fullscreenElement) {
+        img.requestFullscreen().catch(err => {
+            alert(`Lỗi khi mở toàn màn hình: ${err.message}`);
+        });
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function downloadResult() {
+    if (resultData && resultData.overlay_url) {
+        const link = document.createElement('a');
+        link.href = resultData.overlay_url;
+        link.download = `potholeseg_result_${resultData.image_info?.filename || 'image'}.jpg`;
+        link.click();
+    }
+}
+
+function exportPDF() {
+    alert("Chức năng xuất báo cáo PDF đang được phát triển.");
+}
+</script>
+{% endblock %}

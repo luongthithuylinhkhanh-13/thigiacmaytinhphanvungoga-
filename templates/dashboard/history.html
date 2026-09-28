@@ -1,0 +1,132 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Lịch sử phân tích - PotholeSeg{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <h1><i class='bx bx-history text-primary'></i> Lịch sử phân tích</h1>
+    <p>Xem lại tất cả kết quả phân tích đã thực hiện</p>
+</div>
+
+<div class="card">
+    <!-- Toolbar -->
+    <div class="table-toolbar">
+        <form class="search-box" method="GET" action="{{ url_for('history') }}">
+            <i class='bx bx-search'></i>
+            <input type="text" name="search" placeholder="Tìm theo tên file..." value="{{ search }}">
+            <input type="hidden" name="type" value="{{ file_type }}">
+        </form>
+
+        <div class="filter-buttons">
+            <a href="{{ url_for('history', type='all', search=search) }}"
+               class="filter-btn {{ 'active' if file_type == 'all' }}">Tất cả</a>
+            <a href="{{ url_for('history', type='image', search=search) }}"
+               class="filter-btn {{ 'active' if file_type == 'image' }}">Ảnh</a>
+            <a href="{{ url_for('history', type='video', search=search) }}"
+               class="filter-btn {{ 'active' if file_type == 'video' }}">Video</a>
+        </div>
+    </div>
+
+    {% if records %}
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Thời gian</th>
+                    <th>Loại</th>
+                    <th>Tên file</th>
+                    <th>Ổ gà</th>
+                    <th>Confidence</th>
+                    <th>T.gian xử lý</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr>
+                    <td>{{ (page - 1) * 10 + loop.index }}</td>
+                    <td style="white-space: nowrap;">{{ r.created_at }}</td>
+                    <td><span class="badge-type {{ r.file_type }}">{{ 'Ảnh' if r.file_type == 'image' else 'Video' }}</span></td>
+                    <td title="{{ r.file_name }}">{{ r.file_name[:25] }}{% if r.file_name|length > 25 %}...{% endif %}</td>
+                    <td><strong>{{ r.pothole_count }}</strong></td>
+                    <td>{{ "%.1f"|format(r.avg_confidence) }}%</td>
+                    <td>{{ "%.3f"|format(r.processing_time) }}s</td>
+                    <td><span class="badge-status completed">Hoàn thành</span></td>
+                    <td>
+                        <div class="table-actions">
+                            {% if r.result_path %}
+                            <a href="{{ url_for('static', filename=r.result_path) }}" target="_blank">
+                                <button type="button" class="btn-view" title="Xem"><i class='bx bx-show'></i></button>
+                            </a>
+                            <a href="{{ url_for('download_result', record_id=r.id) }}">
+                                <button type="button" class="btn-download" title="Tải xuống"><i class='bx bx-download'></i></button>
+                            </a>
+                            {% endif %}
+                            <button type="button" class="btn-delete" title="Xóa"
+                                    onclick="deleteRecord({{ r.id }})">
+                                <i class='bx bx-trash'></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('history', page=page-1, type=file_type, search=search) }}">
+            <i class='bx bx-chevron-left'></i>
+        </a>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+            {% if p == page %}
+            <span class="active">{{ p }}</span>
+            {% else %}
+            <a href="{{ url_for('history', page=p, type=file_type, search=search) }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page < total_pages %}
+        <a href="{{ url_for('history', page=page+1, type=file_type, search=search) }}">
+            <i class='bx bx-chevron-right'></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <i class='bx bx-folder-open'></i>
+        <h3>Chưa có dữ liệu</h3>
+        <p>Bắt đầu phân tích ảnh hoặc video để xem lịch sử tại đây.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+function deleteRecord(id) {
+    if (!confirm('Bạn có chắc muốn xóa bản ghi này?')) return;
+
+    fetch(`/history/delete/${id}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Lỗi khi xóa bản ghi.');
+            }
+        })
+        .catch(() => alert('Lỗi kết nối.'));
+}
+</script>
+{% endblock %}

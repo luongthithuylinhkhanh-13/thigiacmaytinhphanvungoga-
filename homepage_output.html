@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PotholeSeg - Hệ thống phát hiện và phân vùng ổ gà trên mặt đường sử dụng AI YOLOv8 Segmentation">
+    <title>PotholeSeg - Phát hiện và phân vùng ổ gà bằng AI</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Boxicons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <!-- Chart.js (chỉ load khi cần) -->
+    
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    
+<!-- Navbar cho trang công khai -->
+<nav class="navbar" id="navbar">
+    <a href="/" class="navbar-brand">
+        <div class="logo-icon"><i class='bx bx-map-pin'></i></div>
+        PotholeSeg
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="/" class="active">Trang chủ</a></li>
+        <li><a href="/about" class="">Giới thiệu</a></li>
+        <li><a href="/guide" class="">Hướng dẫn</a></li>
+        <li><a href="/contact" class="">Liên hệ</a></li>
+    </ul>
+    <div class="navbar-auth">
+        <a href="/login" class="btn-login">Đăng nhập</a>
+        <a href="/register" class="btn-register">Đăng ký</a>
+    </div>
+    <button class="mobile-toggle" onclick="toggleMobileNav()">
+        <i class='bx bx-menu'></i>
+    </button>
+</nav>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero" id="hero">
+    <!-- Background ảnh mặt đường -->
+    <div class="hero-bg"></div>
+    <!-- Overlay gradient để chữ dễ đọc -->
+    <div class="hero-overlay"></div>
+
+    <div class="hero-container">
+        <!-- LEFT: Nội dung giới thiệu (58%) -->
+        <div class="hero-content">
+            <h1>Tham gia<br><span class="text-highlight">PotholeSeg</span> ngay hôm nay!</h1>
+            <p class="hero-desc">Tạo tài khoản để sử dụng hệ thống phân vùng ổ gà<br>trên mặt đường bằng trí tuệ nhân tạo.</p>
+
+            <div class="hero-features">
+                <div class="hero-feature">
+                    <div class="feature-icon"><i class='bx bx-rocket'></i></div>
+                    <span>Trải nghiệm mô hình AI hiện đại</span>
+                </div>
+                <div class="hero-feature">
+                    <div class="feature-icon"><i class='bx bx-save'></i></div>
+                    <span>Lưu lịch sử phân tích</span>
+                </div>
+                <div class="hero-feature">
+                    <div class="feature-icon"><i class='bx bx-cloud'></i></div>
+                    <span>Quản lý dữ liệu cá nhân</span>
+                </div>
+                <div class="hero-feature">
+                    <div class="feature-icon"><i class='bx bx-bar-chart'></i></div>
+                    <span>Hỗ trợ phân tích ảnh và video</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Form đăng ký (42%) -->
+        <div class="hero-form-wrap">
+            <div class="hero-card">
+                <h2>Đăng ký tài khoản</h2>
+                <p class="subtitle">Tạo tài khoản để bắt đầu sử dụng hệ thống</p>
+
+                <form action="/register" method="POST" id="heroRegisterForm">
+                    <div class="form-group">
+                        <div class="form-input-icon">
+                            <i class='bx bx-user icon'></i>
+                            <input type="text" name="full_name" class="form-input" placeholder="Họ và tên" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-input-icon">
+                            <i class='bx bx-envelope icon'></i>
+                            <input type="email" name="email" class="form-input" placeholder="Email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-input-icon">
+                            <i class='bx bx-lock-alt icon'></i>
+                            <input type="password" name="password" class="form-input" placeholder="Mật khẩu" required minlength="6">
+                            <button type="button" class="toggle-password" onclick="togglePassword(this)"><i class='bx bx-hide'></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-input-icon">
+                            <i class='bx bx-lock icon'></i>
+                            <input type="password" name="confirm_password" class="form-input" placeholder="Xác nhận mật khẩu" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword(this)"><i class='bx bx-hide'></i></button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">
+                        <i class='bx bx-user-plus'></i> Đăng ký
+                    </button>
+                </form>
+
+                <p class="hero-card-footer">
+                    Đã có tài khoản? <a href="/login">Đăng nhập ngay</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pothole detection labels minh họa — nằm ở vùng mặt đường -->
+    <div class="pothole-labels">
+        <div class="pothole-label" style="bottom: 18%; left: 32%;">
+            <span class="pothole-tag">Pothole 0.92</span>
+            <div class="pothole-bbox bbox-lg"></div>
+        </div>
+        <div class="pothole-label" style="bottom: 28%; left: 50%;">
+            <span class="pothole-tag">Pothole 0.86</span>
+            <div class="pothole-bbox bbox-md"></div>
+        </div>
+        <div class="pothole-label" style="bottom: 14%; left: 66%;">
+            <span class="pothole-tag">Pothole 0.78</span>
+            <div class="pothole-bbox bbox-sm"></div>
+        </div>
+    </div>
+</section>
+
+
+    <!-- Flash Messages -->
+    
+    
+    
+
+    <!-- Auto-close flash messages -->
+    <script>
+        setTimeout(() => {
+            const msgs = document.querySelectorAll('.flash-message');
+            msgs.forEach((msg, i) => {
+                setTimeout(() => {
+                    msg.style.transition = 'all 0.4s ease';
+                    msg.style.opacity = '0';
+                    msg.style.transform = 'translateX(100%)';
+                    setTimeout(() => msg.remove(), 400);
+                }, i * 200);
+            });
+        }, 4000);
+    </script>
+
+    
+<script>
+// Toggle password visibility
+function togglePassword(btn) {
+    const input = btn.parentElement.querySelector('input');
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bx bx-show';
+    } else {
+        input.type = 'password';
+        icon.className = 'bx bx-hide';
+    }
+}
+
+// Navbar scroll effect
+window.addEventListener('scroll', () => {
+    const navbar = document.getElementById('navbar');
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+});
+
+// Hero register form validation
+document.getElementById('heroRegisterForm')?.addEventListener('submit', function(e) {
+    const pw = this.querySelector('[name="password"]').value;
+    const cpw = this.querySelector('[name="confirm_password"]').value;
+    if (pw.length < 6) {
+        e.preventDefault();
+        alert('Mật khẩu phải có ít nhất 6 ký tự!');
+        return;
+    }
+    if (pw !== cpw) {
+        e.preventDefault();
+        alert('Xác nhận mật khẩu không khớp!');
+    }
+});
+</script>
+
+</body>
+</html>

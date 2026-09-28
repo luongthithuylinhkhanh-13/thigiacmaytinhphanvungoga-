@@ -3,6 +3,4 @@ ultralytics
 werkzeug
 opencv-python-headless
 Pillow
-sentence-transformers
 numpy
-requests

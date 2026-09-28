@@ -1,0 +1,20 @@
+<!-- Navbar cho trang công khai -->
+<nav class="navbar" id="navbar">
+    <a href="{{ url_for('index') }}" class="navbar-brand">
+        <div class="logo-icon"><i class='bx bx-map-pin'></i></div>
+        PotholeSeg
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' }}">Trang chủ</a></li>
+        <li><a href="{{ url_for('about') }}" class="{{ 'active' if request.endpoint == 'about' }}">Giới thiệu</a></li>
+        <li><a href="{{ url_for('guide') }}" class="{{ 'active' if request.endpoint == 'guide' }}">Hướng dẫn</a></li>
+        <li><a href="{{ url_for('contact') }}" class="{{ 'active' if request.endpoint == 'contact' }}">Liên hệ</a></li>
+    </ul>
+    <div class="navbar-auth">
+        <a href="{{ url_for('login') }}" class="btn-login">Đăng nhập</a>
+        <a href="{{ url_for('register') }}" class="btn-register">Đăng ký</a>
+    </div>
+    <button class="mobile-toggle" onclick="toggleMobileNav()">
+        <i class='bx bx-menu'></i>
+    </button>
+</nav>

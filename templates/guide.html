@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Hướng dẫn - PotholeSeg{% endblock %}
+
+{% block body %}
+{% include "partials/navbar.html" %}
+
+<div class="page-public">
+    <div class="page-banner">
+        <h1>Hướng dẫn sử dụng</h1>
+        <p>Hướng dẫn từng bước sử dụng hệ thống PotholeSeg</p>
+    </div>
+    <div class="page-body">
+        <h2>Bước 1: Đăng ký tài khoản</h2>
+        <p>Truy cập trang đăng ký, nhập đầy đủ Họ và tên, Email, Mật khẩu và Xác nhận mật khẩu. Sau khi đăng ký thành công, hệ thống sẽ chuyển bạn đến trang đăng nhập.</p>
+
+        <h2>Bước 2: Đăng nhập</h2>
+        <p>Sử dụng email và mật khẩu đã đăng ký để đăng nhập vào hệ thống. Sau khi đăng nhập thành công, bạn sẽ được chuyển đến Dashboard.</p>
+
+        <h2>Bước 3: Nhận diện ảnh</h2>
+        <p>Vào mục "Nhận diện ảnh" trên sidebar. Kéo thả hoặc chọn ảnh mặt đường (JPG, JPEG, PNG). Nhấn "Phân tích" để hệ thống xử lý. Kết quả sẽ hiển thị ảnh gốc và ảnh kết quả với segmentation mask, số lượng ổ gà, confidence và thời gian xử lý.</p>
+
+        <h2>Bước 4: Nhận diện video</h2>
+        <p>Vào mục "Nhận diện video". Upload video mặt đường (MP4, AVI, MOV). Hệ thống sẽ phân tích từng frame và hiển thị kết quả tổng hợp.</p>
+
+        <h2>Bước 5: Xem lịch sử</h2>
+        <p>Tất cả kết quả phân tích được lưu trong mục "Lịch sử phân tích". Bạn có thể xem lại, tải xuống hoặc xóa các bản ghi.</p>
+
+        <h2>Bước 6: Thống kê</h2>
+        <p>Mục "Báo cáo thống kê" hiển thị các biểu đồ trực quan về số lượng ổ gà, thời gian xử lý, và các thông tin phân tích theo thời gian.</p>
+
+        <h2>Lưu ý</h2>
+        <p>• Ảnh tải lên hỗ trợ định dạng: JPG, JPEG, PNG.</p>
+        <p>• Video tải lên hỗ trợ định dạng: MP4, AVI, MOV.</p>
+        <p>• Kích thước file tối đa: 100MB.</p>
+        <p>• Để có kết quả tốt nhất, sử dụng ảnh rõ nét, chụp từ góc nhìn phía trên hoặc phía trước mặt đường.</p>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>&copy; 2024 PotholeSeg</p>
+</footer>
+{% endblock %}

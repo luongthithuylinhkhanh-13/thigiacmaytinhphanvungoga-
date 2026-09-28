@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PotholeSeg - Hệ thống phát hiện và phân vùng ổ gà trên mặt đường sử dụng AI YOLOv8 Segmentation">
+    <title>{% block title %}PotholeSeg{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Boxicons -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <!-- Chart.js (chỉ load khi cần) -->
+    {% block head_extra %}{% endblock %}
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% block body %}{% endblock %}
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages" id="flashMessages">
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+            <i class='bx {{ "bx-check-circle" if category == "success" else "bx-error-circle" if category == "error" else "bx-info-circle" }}'></i>
+            <span>{{ message }}</span>
+            <button class="close-flash" onclick="this.parentElement.remove()">×</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Auto-close flash messages -->
+    <script>
+        setTimeout(() => {
+            const msgs = document.querySelectorAll('.flash-message');
+            msgs.forEach((msg, i) => {
+                setTimeout(() => {
+                    msg.style.transition = 'all 0.4s ease';
+                    msg.style.opacity = '0';
+                    msg.style.transform = 'translateX(100%)';
+                    setTimeout(() => msg.remove(), 400);
+                }, i * 200);
+            });
+        }, 4000);
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

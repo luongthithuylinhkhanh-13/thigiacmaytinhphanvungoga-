@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <a href="{{ url_for('dashboard') }}">
+                <div class="logo-icon"><i class='bx bx-map-pin'></i></div>
+                PotholeSeg
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Tổng quan</div>
+                <a href="{{ url_for('dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'dashboard' }}">
+                    <i class='bx bxs-dashboard'></i> Trang chủ
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Phân tích</div>
+                <a href="{{ url_for('detect_image') }}" class="sidebar-link {{ 'active' if request.endpoint == 'detect_image' }}">
+                    <i class='bx bx-image-alt'></i> Nhận diện ảnh
+                </a>
+                <a href="{{ url_for('detect_video') }}" class="sidebar-link {{ 'active' if request.endpoint == 'detect_video' }}">
+                    <i class='bx bx-video'></i> Nhận diện video
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Quản lý</div>
+                <a href="{{ url_for('history') }}" class="sidebar-link {{ 'active' if request.endpoint == 'history' }}">
+                    <i class='bx bx-history'></i> Lịch sử phân tích
+                </a>
+                <a href="{{ url_for('statistics') }}" class="sidebar-link {{ 'active' if request.endpoint == 'statistics' }}">
+                    <i class='bx bx-bar-chart-alt-2'></i> Báo cáo thống kê
+                </a>
+                <a href="{{ url_for('model_info') }}" class="sidebar-link {{ 'active' if request.endpoint == 'model_info' }}">
+                    <i class='bx bx-chip'></i> Thông tin mô hình
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Khác</div>
+                <a href="{{ url_for('dashboard_guide') }}" class="sidebar-link {{ 'active' if request.endpoint == 'dashboard_guide' }}">
+                    <i class='bx bx-help-circle'></i> Hướng dẫn sử dụng
+                </a>
+                <a href="{{ url_for('profile') }}" class="sidebar-link {{ 'active' if request.endpoint == 'profile' }}">
+                    <i class='bx bx-user'></i> Quản lý tài khoản
+                </a>
+                <a href="{{ url_for('logout') }}" class="sidebar-link danger">
+                    <i class='bx bx-log-out'></i> Đăng xuất
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class='bx bx-menu'></i>
+                </button>
+                <div class="topbar-search">
+                    <i class='bx bx-search'></i>
+                    <input type="text" placeholder="Tìm kiếm...">
+                </div>
+            </div>
+            <div class="topbar-right">
+                <button class="topbar-icon-btn">
+                    <i class='bx bx-bell'></i>
+                    <span class="badge">3</span>
+                </button>
+                <a href="{{ url_for('profile') }}" class="topbar-user" style="text-decoration:none;">
+                    <div class="topbar-avatar">{{ session.get('user_name', 'U')[0] | upper }}</div>
+                    <div class="topbar-user-info">{{ session.get('user_name', 'Người dùng') }}</div>
+                </a>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            {% block dashboard_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar toggle script -->
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+}
+
+// Close sidebar on mobile when clicking outside
+document.addEventListener('click', function(e) {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.querySelector('.sidebar-toggle');
+    if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+        if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+            sidebar.classList.remove('open');
+        }
+    }
+});
+</script>
+{% endblock %}

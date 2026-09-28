@@ -1,0 +1,203 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Nhận diện video - PotholeSeg{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <h1><i class='bx bx-video text-primary'></i> Nhận diện video</h1>
+    <p>Tải video mặt đường lên để phát hiện và phân vùng ổ gà theo từng frame</p>
+</div>
+
+{% if demo_mode %}
+<div class="demo-badge">
+    <i class='bx bx-info-circle'></i> DEMO MODE - Kết quả minh họa (cần best.pt cho kết quả thật)
+</div>
+{% endif %}
+
+<div class="card">
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('videoInput').click()">
+        <div class="upload-icon"><i class='bx bx-video-plus'></i></div>
+        <h3>Kéo thả video vào đây</h3>
+        <p>hoặc click để chọn file • MP4, AVI, MOV</p>
+        <input type="file" id="videoInput" accept=".mp4,.avi,.mov" hidden>
+    </div>
+
+    <!-- Preview -->
+    <div class="upload-preview" id="uploadPreview">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <video id="previewVideo" src="" style="max-height: 200px; border-radius: 8px;" controls></video>
+            <div>
+                <p id="fileName" style="font-weight: 600;"></p>
+                <p id="fileSize" style="font-size: 13px; color: var(--gray-500);"></p>
+                <button class="btn btn-sm btn-secondary mt-1" onclick="resetUpload()">
+                    <i class='bx bx-x'></i> Xóa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analyze Button -->
+    <div style="text-align: center; margin-top: 20px;" id="analyzeSection" class="d-none">
+        <button class="btn btn-primary btn-lg" onclick="analyzeVideo()">
+            <i class='bx bx-analyse'></i> Phân tích video
+        </button>
+    </div>
+</div>
+
+<!-- Processing Overlay -->
+<div class="processing-overlay" id="processingOverlay">
+    <div class="processing-box">
+        <div class="spinner"></div>
+        <h3>Đang xử lý video...</h3>
+        <p id="processingStatus" style="color: var(--gray-500); font-size: 14px;">Đang phân tích từng frame</p>
+        <div class="progress-bar mt-2">
+            <div class="progress" id="progressBar" style="width: 0%"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Result Area -->
+<div class="result-area" id="resultArea">
+    <div class="card">
+        <h3 style="margin-bottom: 20px;"><i class='bx bx-check-circle text-success'></i> Kết quả phân tích video</h3>
+
+        <div style="text-align: center; margin-bottom: 24px;">
+            <video id="resultVideo" controls style="max-width: 100%; max-height: 500px; border-radius: 10px; border: 1px solid var(--gray-200);">
+            </video>
+        </div>
+
+        <div class="result-stats">
+            <div class="result-stat">
+                <div class="value" id="resPotholes">0</div>
+                <div class="label">Tổng ổ gà phát hiện</div>
+            </div>
+            <div class="result-stat">
+                <div class="value" id="resConf">0%</div>
+                <div class="label">Confidence trung bình</div>
+            </div>
+            <div class="result-stat">
+                <div class="value" id="resFps">0</div>
+                <div class="label">FPS</div>
+            </div>
+            <div class="result-stat">
+                <div class="value" id="resFrames">0</div>
+                <div class="label">Tổng frames</div>
+            </div>
+        </div>
+
+        <div class="result-stat" style="text-align: center; padding: 12px; background: var(--gray-50); border-radius: 8px;">
+            <div class="label">Thời gian xử lý</div>
+            <div class="value" id="resTime" style="font-size: 18px;">0s</div>
+        </div>
+
+        <div class="result-actions mt-2">
+            <button class="btn btn-outline" onclick="resetUpload()">
+                <i class='bx bx-refresh'></i> Phân tích video khác
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+const uploadZone = document.getElementById('uploadZone');
+const videoInput = document.getElementById('videoInput');
+const uploadPreview = document.getElementById('uploadPreview');
+const analyzeSection = document.getElementById('analyzeSection');
+const resultArea = document.getElementById('resultArea');
+const processingOverlay = document.getElementById('processingOverlay');
+let selectedFile = null;
+
+// Drag & Drop
+uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => { uploadZone.classList.remove('dragover'); });
+uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+
+videoInput.addEventListener('change', (e) => {
+    if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+function handleFile(file) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!['mp4', 'avi', 'mov'].includes(ext)) {
+        alert('Chỉ hỗ trợ file MP4, AVI, MOV!');
+        return;
+    }
+    selectedFile = file;
+    document.getElementById('previewVideo').src = URL.createObjectURL(file);
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+
+    uploadZone.style.display = 'none';
+    uploadPreview.style.display = 'block';
+    analyzeSection.classList.remove('d-none');
+    resultArea.style.display = 'none';
+}
+
+function resetUpload() {
+    selectedFile = null;
+    videoInput.value = '';
+    uploadZone.style.display = 'block';
+    uploadPreview.style.display = 'none';
+    analyzeSection.classList.add('d-none');
+    resultArea.style.display = 'none';
+}
+
+function analyzeVideo() {
+    if (!selectedFile) { alert('Vui lòng chọn video!'); return; }
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    processingOverlay.classList.add('active');
+    let progress = 0;
+    const progressBar = document.getElementById('progressBar');
+    const progressInterval = setInterval(() => {
+        progress = Math.min(progress + Math.random() * 5, 90);
+        progressBar.style.width = progress + '%';
+        document.getElementById('processingStatus').textContent =
+            `Đang xử lý: ${Math.round(progress)}%`;
+    }, 500);
+
+    fetch('/detect-video', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+
+        setTimeout(() => {
+            processingOverlay.classList.remove('active');
+
+            if (data.success) {
+                document.getElementById('resultVideo').src = data.result_video;
+                document.getElementById('resPotholes').textContent = data.pothole_count;
+                document.getElementById('resConf').textContent = data.avg_confidence.toFixed(1) + '%';
+                document.getElementById('resFps').textContent = data.fps;
+                document.getElementById('resFrames').textContent = data.total_frames;
+                document.getElementById('resTime').textContent = data.processing_time.toFixed(3) + 's';
+
+                resultArea.style.display = 'block';
+                resultArea.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('Lỗi: ' + (data.error || 'Không thể phân tích video'));
+            }
+        }, 500);
+    })
+    .catch(err => {
+        clearInterval(progressInterval);
+        processingOverlay.classList.remove('active');
+        alert('Lỗi kết nối: ' + err.message);
+    });
+}
+</script>
+{% endblock %}

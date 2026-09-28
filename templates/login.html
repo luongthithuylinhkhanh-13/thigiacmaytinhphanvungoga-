@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Đăng nhập - PotholeSeg{% endblock %}
+
+{% block body %}
+{% include "partials/navbar.html" %}
+
+<!-- ===== AUTH HERO SECTION ===== -->
+<section class="auth-hero" id="authHero">
+
+    <div class="auth-hero-container">
+        <!-- LEFT: Nội dung giới thiệu -->
+        <div class="auth-hero-content">
+            <h1>Phát hiện và phân vùng<br><span class="text-highlight">ổ gà bằng AI</span></h1>
+            <p class="auth-hero-desc">
+                Hệ thống ứng dụng thị giác máy tính và mô hình<br>
+                YOLOv8 Segmentation để phát hiện và phân vùng<br>
+                ổ gà trên mặt đường.
+            </p>
+
+            <div class="auth-hero-features">
+                <div class="auth-hero-feature">
+                    <div class="auth-feature-icon"><i class='bx bx-check-circle'></i></div>
+                    <span>Phát hiện ổ gà chính xác</span>
+                </div>
+                <div class="auth-hero-feature">
+                    <div class="auth-feature-icon"><i class='bx bx-check-circle'></i></div>
+                    <span>Xử lý nhanh chóng</span>
+                </div>
+                <div class="auth-hero-feature">
+                    <div class="auth-feature-icon"><i class='bx bx-check-circle'></i></div>
+                    <span>Hỗ trợ ảnh và video</span>
+                </div>
+                <div class="auth-hero-feature">
+                    <div class="auth-feature-icon"><i class='bx bx-check-circle'></i></div>
+                    <span>Lưu lịch sử phân tích</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Form đăng nhập -->
+        <div class="auth-hero-form-wrap">
+            <div class="auth-hero-card">
+                <h2>Đăng nhập</h2>
+                <p class="subtitle">Nhập email và mật khẩu để truy cập hệ thống</p>
+
+                <form action="{{ url_for('login') }}" method="POST" id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <div class="form-input-icon">
+                            <i class='bx bx-envelope icon'></i>
+                            <input type="email" name="email" class="form-input" placeholder="Nhập email" required
+                                   value="{{ email if email else '' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mật khẩu</label>
+                        <div class="form-input-icon">
+                            <i class='bx bx-lock-alt icon'></i>
+                            <input type="password" name="password" class="form-input" placeholder="Nhập mật khẩu" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword(this)">
+                                <i class='bx bx-hide'></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="auth-extra">
+                        <label class="form-checkbox">
+                            <input type="checkbox" name="remember"> Ghi nhớ đăng nhập
+                        </label>
+                        <a href="#">Quên mật khẩu?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">
+                        <i class='bx bx-log-in'></i> Đăng nhập
+                    </button>
+                </form>
+
+                <div class="auth-hero-card-footer">
+                    Chưa có tài khoản? <a href="{{ url_for('register') }}">Đăng ký ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function togglePassword(btn) {
+    const input = btn.parentElement.querySelector('input');
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bx bx-show';
+    } else {
+        input.type = 'password';
+        icon.className = 'bx bx-hide';
+    }
+}
+
+// Navbar scroll effect
+window.addEventListener('scroll', () => {
+    const navbar = document.getElementById('navbar');
+    if (navbar) {
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    }
+});
+</script>
+{% endblock %}

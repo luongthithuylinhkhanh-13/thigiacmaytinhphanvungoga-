@@ -1,0 +1,429 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Dashboard - PotholeSeg{% endblock %}
+
+{% block dashboard_content %}
+<style>
+/* Đặt lại background cho toàn trang dashboard */
+body {
+    background-color: #f6f8fc;
+}
+.main-content {
+    background-color: #f6f8fc;
+}
+.page-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+}
+.dashboard-card {
+    background: #ffffff;
+    border: 1px solid #e5eaf2;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(15,45,90,.05);
+    padding: 24px;
+}
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: 0.2s ease;
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(15,45,90,.08);
+}
+.stat-icon-new {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+}
+.stat-info-new p {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+.stat-info-new h3 {
+    font-size: 24px;
+    color: #0f172a;
+    font-weight: 700;
+    margin: 0;
+}
+.charts-grid-new {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+.card-title-new {
+    font-size: 17px;
+    color: #0f172a;
+    margin-bottom: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.table-new {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+}
+.table-new th {
+    padding: 12px 16px;
+    font-weight: 600;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+}
+.table-new td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #475569;
+}
+.table-new tr:last-child td {
+    border-bottom: none;
+}
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+.badge.img { background: #eff6ff; color: #2563eb; }
+.badge.vid { background: #ecfdf5; color: #059669; }
+.badge.done { background: #f0fdf4; color: #16a34a; }
+.badge.fail { background: #fef2f2; color: #dc2626; }
+.quick-action {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px;
+    border: 1px solid #e5eaf2;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #0f172a;
+    margin-bottom: 12px;
+    transition: 0.2s ease;
+    background: #f8fafc;
+}
+.quick-action:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+.quick-action-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .charts-grid-new {
+        grid-template-columns: 1fr;
+    }
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+
+<!-- Welcome Area -->
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 28px;">
+    <div>
+        <h1 style="font-size: 26px; color: #0f172a; margin-bottom: 6px; font-weight: 700;">Xin chào, {{ user.full_name if user else 'Người dùng' }} 👋</h1>
+        <p style="color: #64748b; font-size: 15px;">Tổng quan hoạt động phân tích ổ gà của bạn</p>
+    </div>
+    <div style="display: flex; gap: 12px;">
+        <a href="{{ url_for('detect_image') }}" class="btn" style="background: #2563eb; color: white; border-radius: 10px; padding: 10px 18px; font-weight: 500;"><i class='bx bx-image-add' style="margin-right: 6px;"></i> Phân tích ảnh</a>
+        <a href="{{ url_for('detect_video') }}" class="btn" style="background: white; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 18px; font-weight: 500;"><i class='bx bx-video-plus' style="margin-right: 6px;"></i> Phân tích video</a>
+    </div>
+</div>
+
+{% if demo_mode %}
+<div style="background: #fffbeb; color: #d97706; padding: 12px 16px; border-radius: 10px; margin-bottom: 24px; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px;">
+    <i class='bx bx-info-circle'></i> Đang chạy ở chế độ DEMO - Dữ liệu minh họa (Không có model best.pt)
+</div>
+{% endif %}
+
+<!-- Stat Cards -->
+<div class="stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 24px;">
+    <div class="dashboard-card stat-card">
+        <div class="stat-icon-new" style="background: #eff6ff; color: #2563eb;"><i class='bx bx-image-alt'></i></div>
+        <div class="stat-info-new">
+            <p>Tổng ảnh đã phân tích</p>
+            <h3>{{ stats.total_images }}</h3>
+        </div>
+    </div>
+    <div class="dashboard-card stat-card">
+        <div class="stat-icon-new" style="background: #ecfdf5; color: #059669;"><i class='bx bx-video'></i></div>
+        <div class="stat-info-new">
+            <p>Tổng video đã phân tích</p>
+            <h3>{{ stats.total_videos }}</h3>
+        </div>
+    </div>
+    <div class="dashboard-card stat-card">
+        <div class="stat-icon-new" style="background: #fef2f2; color: #dc2626;"><i class='bx bx-target-lock'></i></div>
+        <div class="stat-info-new">
+            <p>Ổ gà đã phát hiện</p>
+            <h3>{{ stats.total_potholes }}</h3>
+        </div>
+    </div>
+    <div class="dashboard-card stat-card">
+        <div class="stat-icon-new" style="background: #fffbeb; color: #d97706;"><i class='bx bx-time-five'></i></div>
+        <div class="stat-info-new">
+            <p>Thời gian xử lý trung bình</p>
+            <h3>{{ "%.2f"|format(stats.avg_time) }}s</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="charts-grid-new">
+    <div class="dashboard-card">
+        <h3 class="card-title-new">Số lượng ổ gà phát hiện theo thời gian</h3>
+        {% if chart_labels != '[]' and chart_labels != '""' %}
+            <div style="height: 280px; position: relative;"><canvas id="potholeChart"></canvas></div>
+        {% else %}
+            <div style="height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #64748b;">
+                <i class='bx bx-line-chart' style="font-size: 48px; color: #cbd5e1; margin-bottom: 12px;"></i>
+                <h4 style="color: #475569; font-size: 16px; font-weight: 600; margin-bottom: 8px;">Chưa có dữ liệu phân tích</h4>
+                <p style="font-size: 14px; margin-bottom: 16px; max-width: 280px;">Thực hiện phân tích ảnh hoặc video để xem thống kê.</p>
+                <a href="{{ url_for('detect_image') }}" class="btn" style="background: #2563eb; color: white; padding: 8px 16px; border-radius: 8px; font-size: 14px;">Phân tích ngay</a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="dashboard-card">
+        <h3 class="card-title-new">Phân bố loại phân tích</h3>
+        {% if stats.total_images > 0 or stats.total_videos > 0 %}
+            <div style="height: 280px; position: relative;"><canvas id="typeChart"></canvas></div>
+        {% else %}
+            <div style="height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #64748b;">
+                <i class='bx bx-pie-chart-alt-2' style="font-size: 48px; color: #cbd5e1; margin-bottom: 12px;"></i>
+                <h4 style="color: #475569; font-size: 16px; font-weight: 600; margin-bottom: 8px;">Chưa có dữ liệu</h4>
+                <p style="font-size: 14px;">Bạn chưa thực hiện phân tích nào.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Bottom Section -->
+<div class="bottom-grid">
+    <!-- Recent Analysis -->
+    <div class="dashboard-card">
+        <h3 class="card-title-new">Phân tích gần đây</h3>
+        {% if recent %}
+            <div style="overflow-x: auto;">
+                <table class="table-new">
+                    <thead>
+                        <tr>
+                            <th>Tệp</th>
+                            <th>Loại</th>
+                            <th>Số ổ gà</th>
+                            <th>Thời gian xử lý</th>
+                            <th>Ngày</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in recent %}
+                        <tr>
+                            <td style="font-weight: 500; color: #0f172a;">{{ r.file_name[:25] }}{% if r.file_name|length > 25 %}...{% endif %}</td>
+                            <td>
+                                {% if r.file_type == 'image' %}
+                                    <span class="badge img">Ảnh</span>
+                                {% else %}
+                                    <span class="badge vid">Video</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-weight: 600;">{{ r.pothole_count }}</td>
+                            <td>{{ "%.2f"|format(r.processing_time) }}s</td>
+                            <td>{{ r.created_at[:10] }}</td>
+                            <td>
+                                {% if r.status == 'completed' %}
+                                    <span class="badge done">Hoàn thành</span>
+                                {% else %}
+                                    <span class="badge fail">Thất bại</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div style="padding: 40px 20px; text-align: center; color: #64748b;">
+                <i class='bx bx-history' style="font-size: 40px; color: #cbd5e1; margin-bottom: 12px;"></i>
+                <p style="margin-bottom: 16px;">Bạn chưa thực hiện phân tích nào.</p>
+                <a href="{{ url_for('detect_image') }}" class="btn" style="background: #2563eb; color: white; padding: 8px 16px; border-radius: 8px; font-size: 14px;">Phân tích ảnh đầu tiên</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Right Side Cards -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+        <div class="dashboard-card">
+            <h3 class="card-title-new">Thao tác nhanh</h3>
+            <a href="{{ url_for('detect_image') }}" class="quick-action">
+                <div class="quick-action-icon" style="background: #eff6ff; color: #2563eb;"><i class='bx bx-image'></i></div>
+                <div>
+                    <div style="font-weight: 600; font-size: 14px;">Upload ảnh</div>
+                    <div style="font-size: 13px; color: #64748b; margin-top: 2px;">Phân tích ổ gà từ ảnh.</div>
+                </div>
+            </a>
+            <a href="{{ url_for('detect_video') }}" class="quick-action">
+                <div class="quick-action-icon" style="background: #ecfdf5; color: #059669;"><i class='bx bx-video'></i></div>
+                <div>
+                    <div style="font-weight: 600; font-size: 14px;">Upload video</div>
+                    <div style="font-size: 13px; color: #64748b; margin-top: 2px;">Phân tích ổ gà từ video.</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="dashboard-card">
+            <h3 class="card-title-new">Mô hình đang sử dụng</h3>
+            <div style="display: flex; flex-direction: column; gap: 14px; font-size: 14px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #64748b;">Model:</span>
+                    <span style="font-weight: 600; color: #0f172a;">best.pt</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #64748b;">Task:</span>
+                    <span style="font-weight: 600; color: #0f172a;">Segmentation</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #64748b;">Status:</span>
+                    {% if not demo_mode %}
+                        <span class="badge done">Sẵn sàng</span>
+                    {% else %}
+                        <span class="badge fail" style="background: #fffbeb; color: #d97706;">Demo Mode</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+const chartLabels = {{ chart_labels | safe }};
+const chartValues = {{ chart_values | safe }};
+
+// Line Chart
+const ctx1 = document.getElementById('potholeChart');
+if (ctx1 && chartLabels.length > 0) {
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: 'Số lượng ổ gà',
+                data: chartValues,
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37, 99, 235, 0.05)',
+                borderWidth: 2,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#2563eb',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    padding: 12,
+                    titleFont: { size: 13, family: "'Inter', sans-serif" },
+                    bodyFont: { size: 14, family: "'Inter', sans-serif" },
+                    displayColors: false,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f1f5f9', drawBorder: false },
+                    ticks: { color: '#64748b', font: { family: "'Inter', sans-serif" } }
+                },
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    ticks: { color: '#64748b', font: { family: "'Inter', sans-serif" } }
+                }
+            }
+        }
+    });
+}
+
+// Doughnut Chart
+const ctx2 = document.getElementById('typeChart');
+const totalImages = {{ stats.total_images }};
+const totalVideos = {{ stats.total_videos }};
+
+if (ctx2 && (totalImages > 0 || totalVideos > 0)) {
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['Ảnh', 'Video'],
+            datasets: [{
+                data: [totalImages, totalVideos],
+                backgroundColor: ['#2563eb', '#10b981'],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        color: '#475569',
+                        font: { family: "'Inter', sans-serif", size: 13 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#0f172a',
+                    padding: 12,
+                    bodyFont: { size: 14, family: "'Inter', sans-serif" },
+                    cornerRadius: 8
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

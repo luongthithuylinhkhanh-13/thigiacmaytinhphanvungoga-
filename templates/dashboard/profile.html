@@ -1,0 +1,91 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Quản lý tài khoản - PotholeSeg{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <h1><i class='bx bx-user text-primary'></i> Quản lý tài khoản</h1>
+    <p>Cập nhật thông tin cá nhân và mật khẩu</p>
+</div>
+
+<!-- Profile Header -->
+<div class="card profile-card mb-3">
+    <div class="profile-header">
+        <div class="profile-avatar">{{ user.full_name[0] | upper }}</div>
+        <div class="profile-info">
+            <h2>{{ user.full_name }}</h2>
+            <p>{{ user.email }}</p>
+            <p style="font-size: 13px; color: var(--gray-400);">Ngày tham gia: {{ user.created_at }}</p>
+        </div>
+    </div>
+
+    <!-- Update Info Form -->
+    <h3 style="margin-bottom: 16px;"><i class='bx bx-edit text-primary'></i> Cập nhật thông tin</h3>
+    <form action="{{ url_for('profile') }}" method="POST">
+        <input type="hidden" name="action" value="update_info">
+        <div class="form-group">
+            <label class="form-label">Họ và tên</label>
+            <input type="text" name="full_name" class="form-input" value="{{ user.full_name }}" required style="max-width: 400px;">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" value="{{ user.email }}" disabled style="max-width: 400px; background: var(--gray-100);">
+            <small style="color: var(--gray-400); font-size: 12px;">Email không thể thay đổi</small>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class='bx bx-save'></i> Lưu thay đổi
+        </button>
+    </form>
+</div>
+
+<!-- Change Password -->
+<div class="card profile-card mb-3">
+    <h3 style="margin-bottom: 16px;"><i class='bx bx-lock-alt text-primary'></i> Đổi mật khẩu</h3>
+    <form action="{{ url_for('profile') }}" method="POST" id="changePasswordForm">
+        <input type="hidden" name="action" value="change_password">
+        <div class="form-group">
+            <label class="form-label">Mật khẩu hiện tại</label>
+            <input type="password" name="current_password" class="form-input" required style="max-width: 400px;">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Mật khẩu mới</label>
+            <input type="password" name="new_password" class="form-input" required minlength="6" style="max-width: 400px;">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Xác nhận mật khẩu mới</label>
+            <input type="password" name="confirm_password" class="form-input" required style="max-width: 400px;">
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <i class='bx bx-check'></i> Đổi mật khẩu
+        </button>
+    </form>
+</div>
+
+<!-- Logout -->
+<div class="card profile-card">
+    <h3 style="margin-bottom: 16px;"><i class='bx bx-log-out text-danger'></i> Đăng xuất</h3>
+    <p style="font-size: 14px; color: var(--gray-500); margin-bottom: 16px;">Đăng xuất khỏi hệ thống PotholeSeg.</p>
+    <a href="{{ url_for('logout') }}" class="btn btn-danger">
+        <i class='bx bx-log-out'></i> Đăng xuất
+    </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+    const newPw = this.querySelector('[name="new_password"]').value;
+    const confirmPw = this.querySelector('[name="confirm_password"]').value;
+    if (newPw.length < 6) {
+        e.preventDefault();
+        alert('Mật khẩu mới phải có ít nhất 6 ký tự!');
+        return;
+    }
+    if (newPw !== confirmPw) {
+        e.preventDefault();
+        alert('Xác nhận mật khẩu không khớp!');
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Hướng dẫn sử dụng - PotholeSeg{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-header">
+    <h1><i class='bx bx-help-circle text-primary'></i> Hướng dẫn sử dụng</h1>
+    <p>Hướng dẫn chi tiết cách sử dụng hệ thống PotholeSeg</p>
+</div>
+
+<div class="card mb-3">
+    <h3 style="margin-bottom: 16px;">📷 Nhận diện ảnh</h3>
+    <div style="font-size: 14px; line-height: 2; color: var(--gray-600);">
+        <p><strong>Bước 1:</strong> Chọn mục "Nhận diện ảnh" từ sidebar.</p>
+        <p><strong>Bước 2:</strong> Kéo thả hoặc click để chọn ảnh mặt đường (hỗ trợ JPG, JPEG, PNG).</p>
+        <p><strong>Bước 3:</strong> Tùy chỉnh các tùy chọn hiển thị: Mask, Đường viền, Confidence.</p>
+        <p><strong>Bước 4:</strong> Nhấn nút "Phân tích" và chờ kết quả.</p>
+        <p><strong>Bước 5:</strong> Xem kết quả với ảnh gốc và ảnh phân vùng cạnh nhau, cùng các thống kê chi tiết.</p>
+        <p><strong>Bước 6:</strong> Tải ảnh kết quả hoặc phân tích ảnh khác.</p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <h3 style="margin-bottom: 16px;">🎬 Nhận diện video</h3>
+    <div style="font-size: 14px; line-height: 2; color: var(--gray-600);">
+        <p><strong>Bước 1:</strong> Chọn mục "Nhận diện video" từ sidebar.</p>
+        <p><strong>Bước 2:</strong> Upload video mặt đường (hỗ trợ MP4, AVI, MOV, tối đa 100MB).</p>
+        <p><strong>Bước 3:</strong> Nhấn "Phân tích video" và chờ hệ thống xử lý từng frame.</p>
+        <p><strong>Bước 4:</strong> Xem video kết quả với segmentation mask trên từng frame.</p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <h3 style="margin-bottom: 16px;">📊 Lịch sử & Thống kê</h3>
+    <div style="font-size: 14px; line-height: 2; color: var(--gray-600);">
+        <p>• <strong>Lịch sử phân tích:</strong> Xem lại tất cả kết quả đã phân tích, tìm kiếm theo tên file, lọc theo loại (ảnh/video).</p>
+        <p>• <strong>Báo cáo thống kê:</strong> Xem biểu đồ trực quan về số lượng ổ gà, thời gian xử lý, phân bố kích thước.</p>
+        <p>• <strong>Thông tin mô hình:</strong> Xem thông số kỹ thuật của mô hình YOLOv8 Segmentation.</p>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 16px;">📌 Lưu ý quan trọng</h3>
+    <div style="font-size: 14px; line-height: 2; color: var(--gray-600);">
+        <p>• Ảnh nên chụp rõ nét, từ góc nhìn phía trên hoặc phía trước mặt đường để có kết quả tốt nhất.</p>
+        <p>• Video nên có độ phân giải rõ ràng và không rung lắc quá nhiều.</p>
+        <p>• Kích thước file tối đa: 100MB.</p>
+        <p>• Thời gian xử lý phụ thuộc vào kích thước ảnh/video và cấu hình máy chủ.</p>
+    </div>
+</div>
+{% endblock %}
