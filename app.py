@@ -800,9 +800,9 @@ def run_yolo_video_inference(video_path, unique_name):
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    result_name = f"result_{unique_name.rsplit('.', 1)[0]}.mp4"
+    result_name = f"result_{unique_name.rsplit('.', 1)[0]}.webm"
     result_path = os.path.join(RESULT_FOLDER, result_name)
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    fourcc = cv2.VideoWriter_fourcc(*'vp80')
     out = cv2.VideoWriter(result_path, fourcc, fps, (w, h))
 
     total_potholes = 0

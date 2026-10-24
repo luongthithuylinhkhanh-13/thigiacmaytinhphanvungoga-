@@ -1,18 +1,20 @@
 <!-- Navbar cho trang công khai -->
 <nav class="navbar" id="navbar">
-    <a href="{{ url_for('index') }}" class="navbar-brand">
-        <div class="logo-icon"><i class='bx bx-map-pin'></i></div>
-        PotholeSeg
+    <a href="{{ url_for('index') }}" class="navbar-brand" style="text-decoration: none;">
+        <div class="logo-icon" style="background: transparent; color: var(--primary); font-size: 32px; width: auto; height: auto; margin-right: 4px;">
+            <i class='bx bx-street-view'></i>
+        </div>
+        <span style="color: #0f172a;">Pothole</span><span style="color: var(--primary);">Seg</span>
     </a>
-    <ul class="navbar-nav">
-        <li><a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' }}">Trang chủ</a></li>
-        <li><a href="{{ url_for('about') }}" class="{{ 'active' if request.endpoint == 'about' }}">Giới thiệu</a></li>
-        <li><a href="{{ url_for('guide') }}" class="{{ 'active' if request.endpoint == 'guide' }}">Hướng dẫn</a></li>
-        <li><a href="{{ url_for('contact') }}" class="{{ 'active' if request.endpoint == 'contact' }}">Liên hệ</a></li>
+    <ul class="navbar-nav" style="margin: 0 auto;">
+        <li><a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' }}" style="{{ 'color: var(--primary); background: transparent; border-bottom: 2px solid var(--primary); border-radius: 0;' if request.endpoint == 'index' else 'color: #475569; font-weight: 500;' }}">Trang chủ</a></li>
+        <li><a href="{{ url_for('about') }}" class="{{ 'active' if request.endpoint == 'about' }}" style="{{ 'color: var(--primary); background: transparent; border-bottom: 2px solid var(--primary); border-radius: 0;' if request.endpoint == 'about' else 'color: #475569; font-weight: 500;' }}">Giới thiệu</a></li>
+        <li><a href="{{ url_for('guide') }}" class="{{ 'active' if request.endpoint == 'guide' }}" style="{{ 'color: var(--primary); background: transparent; border-bottom: 2px solid var(--primary); border-radius: 0;' if request.endpoint == 'guide' else 'color: #475569; font-weight: 500;' }}">Hướng dẫn</a></li>
+        <li><a href="{{ url_for('contact') }}" class="{{ 'active' if request.endpoint == 'contact' }}" style="{{ 'color: var(--primary); background: transparent; border-bottom: 2px solid var(--primary); border-radius: 0;' if request.endpoint == 'contact' else 'color: #475569; font-weight: 500;' }}">Liên hệ</a></li>
     </ul>
-    <div class="navbar-auth">
-        <a href="{{ url_for('login') }}" class="btn-login">Đăng nhập</a>
-        <a href="{{ url_for('register') }}" class="btn-register">Đăng ký</a>
+    <div class="navbar-auth" style="margin-left: 0;">
+        <a href="{{ url_for('login') }}" class="btn-login" style="background: white; border: 1.5px solid var(--primary); color: var(--primary);">Đăng nhập</a>
+        <a href="{{ url_for('register') }}" class="btn-register" style="background: var(--primary); color: white; border: none;">Đăng ký</a>
     </div>
     <button class="mobile-toggle" onclick="toggleMobileNav()">
         <i class='bx bx-menu'></i>

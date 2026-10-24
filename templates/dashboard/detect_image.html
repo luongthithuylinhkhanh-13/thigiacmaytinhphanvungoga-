@@ -542,6 +542,288 @@
 .no-detection { text-align: center; padding: 40px 20px; background: var(--success-light); border: 1px solid #bbf7d0; border-radius: 12px; margin-bottom: 24px; }
 .no-detection i { font-size: 48px; color: var(--success); margin-bottom: 16px; }
 .no-detection h3 { color: #166534; font-size: 20px; margin-bottom: 8px; }
+
+/* Dashboard Overrides */
+.page-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+}
+.section-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 24px;
+}
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.section-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+/* Header */
+.result-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 16px;
+}
+.result-title-box h2 {
+    font-size: 24px;
+    font-weight: 750;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+}
+.result-meta-inline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #64748b;
+    font-size: 13px;
+    width: 100%;
+    margin-bottom: 24px;
+}
+.result-actions {
+    display: flex;
+    gap: 12px;
+}
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #ecfdf5;
+    color: #10b981;
+}
+
+/* Metrics */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+.metric-card {
+    background: #fff;
+    border: 1px solid #e5eaf2;
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: 0.2s;
+}
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+.metric-data {
+    display: flex;
+    flex-direction: column;
+}
+.metric-value {
+    font-size: 24px;
+    font-weight: 750;
+    color: #0f172a;
+    line-height: 1.2;
+}
+.metric-label {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+/* Visuals */
+.visual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.visual-box {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8fafc;
+}
+.visual-box.result-highlight {
+    border: 1px solid rgba(37,99,235,0.3);
+}
+.visual-box-header {
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+}
+.result-mode {
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 9px;
+    display: flex;
+    gap: 2px;
+}
+.mode-btn {
+    border: none;
+    background: transparent;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.mode-btn.active {
+    background: #2563eb;
+    color: #fff;
+}
+.visual-box-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 10px;
+}
+.visual-box-content img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Overview */
+.overview-card {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+.overview-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #1e3a8a;
+}
+
+/* Table */
+.table-container {
+    overflow-x: auto;
+}
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.detail-table th {
+    background: #f8fafc;
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+}
+.detail-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #0f172a;
+    border-bottom: 1px solid #f1f5f9;
+}
+.detail-table tr:hover td {
+    background: #f8fbff;
+}
+
+/* Charts */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+.chart-wrapper {
+    height: 250px;
+    width: 100%;
+}
+
+/* Info Grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+.def-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 24px;
+    row-gap: 12px;
+    font-size: 14px;
+}
+.def-label {
+    color: #64748b;
+}
+.def-value {
+    font-weight: 500;
+    color: #0f172a;
+}
+
+/* Fullscreen Modal */
+.fullscreen-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+.fullscreen-modal img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+.fullscreen-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+}
+
+@media (max-width: 1200px) {
+    .metrics-grid { grid-template-columns: repeat(3, 1fr); }
+    .charts-grid, .info-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .visual-grid { grid-template-columns: 1fr; }
+}
 </style>
 {% endblock %}
 
@@ -623,121 +905,126 @@
     </div>
 </div>
 
+
 <!-- RESULT AREA / REPORT -->
 <div id="resultArea" style="display: none;">
-    <div class="analysis-report">
+    <div class="result-header">
+        <div class="result-title-box">
+            <h2>BÁO CÁO PHÂN TÍCH Ổ GÀ <br><span style="font-size: 15px; font-weight: 500; color: #64748b;">AI Pothole Segmentation Report</span></h2>
+        </div>
+        <div class="result-actions">
+            <button class="btn btn-outline" onclick="resetInput()"><i class='bx bx-refresh'></i> Ảnh khác</button>
+            <button class="btn btn-secondary" onclick="exportPDF()" id="exportPdfBtn"><i class='bx bxs-file-pdf'></i> Xuất báo cáo</button>
+            <button class="btn btn-primary" onclick="downloadResult()"><i class='bx bx-download'></i> Tải kết quả</button>
+        </div>
+    </div>
+    
+    <div class="result-meta-inline">
+        <span class="badge-status done"><i class='bx bx-check'></i> HOÀN THÀNH</span>
+        <span><i class='bx bx-image'></i> <strong id="repFilename">...</strong></span>
+        <span>|</span>
+        <span><i class='bx bx-brain'></i> YOLOv8 Segmentation</span>
+        <span>|</span>
+        <span><i class='bx bx-time'></i> <strong id="repTime">...</strong></span>
+    </div>
+
+    <!-- 5 Stat Cards -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-icon" style="background: #fef2f2; color: #ef4444;"><i class='bx bx-target-lock'></i></div>
+            <div class="metric-data">
+                <div class="metric-value" id="statCount">N/A</div>
+                <div class="metric-label">Ổ gà phát hiện</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background: #f3e8ff; color: #8b5cf6;"><i class='bx bx-tachometer'></i></div>
+            <div class="metric-data">
+                <div class="metric-value" id="statConf">N/A</div>
+                <div class="metric-label">Độ tin cậy TB</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background: #fffbeb; color: #f59e0b;"><i class='bx bx-area'></i></div>
+            <div class="metric-data">
+                <div class="metric-value" id="statArea">N/A</div>
+                <div class="metric-label">Tổng vùng hư hỏng</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background: #ecfdf5; color: #10b981;"><i class='bx bx-pie-chart-alt-2'></i></div>
+            <div class="metric-data">
+                <div class="metric-value" id="statRatio">N/A</div>
+                <div class="metric-label">Tỷ lệ ảnh hưởng</div>
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-icon" style="background: #eff6ff; color: #2563eb;"><i class='bx bx-time-five'></i></div>
+            <div class="metric-data">
+                <div class="metric-value" id="statTime">N/A</div>
+                <div class="metric-label">Thời gian xử lý</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State (No detections) -->
+    <div id="noDetectionState" class="no-detection" style="display: none; text-align: center; padding: 40px; background: #fff; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+        <i class='bx bx-check-shield' style="font-size: 48px; color: #10b981; margin-bottom: 12px;"></i>
+        <h3 style="font-size: 18px; color: #0f172a; margin-bottom: 8px;">Không phát hiện ổ gà</h3>
+        <p style="color: #64748b;">Mô hình không tìm thấy vùng mặt đường nào bị hư hỏng trong bức ảnh này.</p>
+    </div>
+
+    <!-- Detected Content -->
+    <div id="detectedContent">
         
-        <!-- Header -->
-        <div class="report-header-top">
-            <div class="report-title">
-                <h2><i class='bx bx-file-find text-primary'></i> BÁO CÁO PHÂN TÍCH Ổ GÀ (AI REPORT)</h2>
-                <span class="badge-status"><i class='bx bx-check'></i> HOÀN THÀNH</span>
+        <!-- Visuals -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3><i class='bx bx-image'></i> Trực quan hóa kết quả</h3>
             </div>
-            <div class="report-actions">
-                <button class="btn-outline-blue" onclick="resetInput()"><i class='bx bx-refresh'></i> Ảnh khác</button>
-                <button class="btn-primary-blue" onclick="downloadResult()"><i class='bx bx-download'></i> Tải kết quả</button>
-                <button class="btn-secondary-gray" onclick="exportPDF()" id="exportPdfBtn"><i class='bx bxs-file-pdf'></i> Xuất báo cáo</button>
-            </div>
-        </div>
-        <div class="report-subtitle">Phân tích ảnh mặt đường bằng trí tuệ nhân tạo</div>
-        
-        <div class="report-meta-row">
-            <span><i class='bx bx-image'></i> <strong id="repFilename">...</strong></span>
-            <span>|</span>
-            <span><i class='bx bx-brain'></i> YOLOv8 Segmentation</span>
-            <span>|</span>
-            <span><i class='bx bx-calendar'></i> <strong id="repTime">...</strong></span>
-        </div>
-
-        <!-- 5 Stat Cards -->
-        <div class="stats-grid">
-            <div class="stat-card-new">
-                <div class="stat-icon red"><i class='bx bx-target-lock'></i></div>
-                <div class="stat-info">
-                    <div class="stat-value" id="statCount">N/A</div>
-                    <div class="stat-label">Ổ gà phát hiện</div>
-                </div>
-            </div>
-            <div class="stat-card-new">
-                <div class="stat-icon purple"><i class='bx bx-tachometer'></i></div>
-                <div class="stat-info">
-                    <div class="stat-value" id="statConf">N/A</div>
-                    <div class="stat-label">Độ tin cậy trung bình</div>
-                </div>
-            </div>
-            <div class="stat-card-new">
-                <div class="stat-icon orange"><i class='bx bx-area'></i></div>
-                <div class="stat-info">
-                    <div class="stat-value" id="statArea">N/A</div>
-                    <div class="stat-label">Tổng vùng hư hỏng</div>
-                </div>
-            </div>
-            <div class="stat-card-new">
-                <div class="stat-icon green"><i class='bx bx-pie-chart-alt-2'></i></div>
-                <div class="stat-info">
-                    <div class="stat-value" id="statRatio">N/A</div>
-                    <div class="stat-label">Tỷ lệ ảnh hưởng</div>
-                </div>
-            </div>
-            <div class="stat-card-new">
-                <div class="stat-icon blue"><i class='bx bx-time-five'></i></div>
-                <div class="stat-info">
-                    <div class="stat-value" id="statTime">N/A</div>
-                    <div class="stat-label">Thời gian xử lý</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Empty State (No detections) -->
-        <div id="noDetectionState" class="no-detection" style="display: none;">
-            <i class='bx bx-check-shield'></i>
-            <h3>Không phát hiện ổ gà</h3>
-            <p>Mô hình không tìm thấy vùng mặt đường nào bị hư hỏng trong bức ảnh này.</p>
-        </div>
-
-        <!-- Detected Content -->
-        <div id="detectedContent">
-            
-            <!-- Image Viewer -->
-            <div class="section-title-new"><i class='bx bx-image'></i> Trực quan hóa kết quả</div>
-            <div class="viewer-grid">
-                <!-- Original -->
-                <div class="viewer-box-new">
-                    <div class="viewer-header-new">
-                        <span><i class='bx bx-image-alt'></i> Ảnh gốc</span>
-                        <i class='bx bx-expand' style="cursor:pointer; color:#64748b;" onclick="toggleFullscreen(document.getElementById('viewOriginal'))"></i>
+            <div class="visual-grid">
+                <div class="visual-box">
+                    <div class="visual-box-header">
+                        <span>ẢNH GỐC</span>
+                        <i class='bx bx-fullscreen' style="cursor:pointer; font-size: 16px;" onclick="openFullscreen('viewOriginal')"></i>
                     </div>
-                    <div class="viewer-content-new">
-                        <div id="origEmpty" class="empty-image-state" style="display:none;">
-                            <i class='bx bx-image'></i>
-                            Chưa có ảnh hiển thị
+                    <div class="visual-box-content">
+                        <img id="viewOriginal" src="" alt="Original" onclick="openFullscreen('viewOriginal')">
+                    </div>
+                </div>
+                <div class="visual-box result-highlight">
+                    <div class="visual-box-header">
+                        <span>KẾT QUẢ AI</span>
+                        <div class="result-mode">
+                            <button class="mode-btn active" onclick="switchViewerTab('overlay', this)">Overlay</button>
+                            <button class="mode-btn" onclick="switchViewerTab('mask', this)">Mask</button>
                         </div>
-                        <img id="viewOriginal" src="" alt="Original">
+                        <i class='bx bx-fullscreen' style="cursor:pointer; font-size: 16px;" onclick="openFullscreen('viewResult')"></i>
                     </div>
-                </div>
-                <!-- Result -->
-                <div class="viewer-box-new">
-                    <div class="viewer-header-new">
-                        <span><i class='bx bx-image'></i> Kết quả AI</span>
-                        <div class="segmented-control">
-                            <button class="seg-btn active" onclick="switchViewerTab('overlay', this)">Overlay</button>
-                            <button class="seg-btn" onclick="switchViewerTab('mask', this)">Mask</button>
-                        </div>
-                    </div>
-                    <div class="viewer-content-new">
-                        <div id="resEmpty" class="empty-image-state" style="display:none;">
-                            <i class='bx bx-image'></i>
-                            Chưa có ảnh hiển thị
-                        </div>
-                        <img id="viewResult" src="" alt="Result">
+                    <div class="visual-box-content">
+                        <img id="viewResult" src="" alt="Result" onclick="openFullscreen('viewResult')">
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Details Table -->
-            <div class="section-title-small"><i class='bx bx-list-ul'></i> Chi tiết đối tượng phát hiện</div>
-            <div class="table-responsive">
-                <table class="data-table-new" id="detailsTable">
+        <!-- Overview -->
+        <div class="section-card overview-card">
+            <div class="section-header">
+                <h3><i class='bx bx-search-alt-2'></i> Phân tích tổng quan</h3>
+            </div>
+            <div class="overview-content" id="reportSummaryText">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- Details Table -->
+        <div class="section-card">
+            <div class="section-header">
+                <h3><i class='bx bx-list-ul'></i> Chi tiết đối tượng phát hiện</h3>
+            </div>
+            <div class="table-container">
+                <table class="detail-table" id="detailsTable">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -745,85 +1032,67 @@
                             <th>Độ tin cậy</th>
                             <th>Diện tích (px²)</th>
                             <th>Tỷ lệ ảnh (%)</th>
-                            <th>Bounding Box (X1, Y1, X2, Y2)</th>
-                            <th>Tâm (X, Y)</th>
+                            <th>Bounding Box</th>
+                            <th>Tâm (X,Y)</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- Rows rendered via JS -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Charts -->
-            <div class="charts-grid">
-                <div class="chart-card-new">
-                    <div class="section-title-small" style="font-size:14px;"><i class='bx bx-bar-chart'></i> Độ tin cậy của các đối tượng</div>
-                    <canvas id="confChart"></canvas>
-                </div>
-                <div class="chart-card-new">
-                    <div class="section-title-small" style="font-size:14px;"><i class='bx bx-line-chart'></i> Diện tích vùng hư hỏng</div>
-                    <canvas id="areaChart"></canvas>
-                </div>
-            </div>
-            
-        </div> <!-- End detectedContent -->
-
-        <!-- Info Cards -->
-        <div class="info-grid-new">
-            <div class="info-card-new">
-                <div class="section-title-small" style="font-size:14px;"><i class='bx bx-image'></i> Thông tin ảnh đầu vào</div>
-                <table class="info-table">
-                    <tr>
-                        <td>Tên file:</td>
-                        <td id="infoFilename">...</td>
-                        <td>Dung lượng:</td>
-                        <td id="infoSize">...</td>
-                    </tr>
-                    <tr>
-                        <td>Độ phân giải:</td>
-                        <td id="infoResolution">...</td>
-                        <td>Định dạng:</td>
-                        <td>JPG</td>
-                    </tr>
-                    <tr>
-                        <td>Tổng số pixel:</td>
-                        <td id="infoTotalPixels">...</td>
-                        <td>Màu sắc:</td>
-                        <td>RGB</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="info-card-new">
-                <div class="section-title-small" style="font-size:14px;"><i class='bx bx-cog'></i> Thông tin mô hình</div>
-                <table class="info-table">
-                    <tr>
-                        <td>Mô hình:</td>
-                        <td id="modName">YOLOv8 Segmentation</td>
-                        <td>Confidence Threshold:</td>
-                        <td id="modConf">...</td>
-                    </tr>
-                    <tr>
-                        <td>Task:</td>
-                        <td id="modTask">Instance Segmentation</td>
-                        <td>IoU Threshold:</td>
-                        <td id="modIou">...</td>
-                    </tr>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Summary -->
-        <div class="summary-card">
-            <i class='bx bx-sparkles'></i>
-            <div>
-                <strong style="display:block; margin-bottom:4px;">Tóm tắt phân tích</strong>
-                <span id="reportSummaryText">Hệ thống đang phân tích...</span>
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class='bx bx-bar-chart'></i> Độ tin cậy của các đối tượng</h3>
+                </div>
+                <div class="chart-wrapper"><canvas id="confChart"></canvas></div>
+            </div>
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class='bx bx-line-chart'></i> Diện tích vùng hư hỏng</h3>
+                </div>
+                <div class="chart-wrapper"><canvas id="areaChart"></canvas></div>
             </div>
         </div>
+        
+    </div> <!-- End detectedContent -->
 
+    <!-- Info Cards -->
+    <div class="info-grid">
+        <div class="section-card">
+            <div class="section-header">
+                <h3><i class='bx bx-image'></i> Thông tin ảnh đầu vào</h3>
+            </div>
+            <div class="def-grid">
+                <div class="def-label">Tên file:</div><div class="def-value" id="infoFilename">...</div>
+                <div class="def-label">Dung lượng:</div><div class="def-value" id="infoSize">...</div>
+                <div class="def-label">Độ phân giải:</div><div class="def-value" id="infoResolution">...</div>
+                <div class="def-label">Tổng số pixel:</div><div class="def-value" id="infoTotalPixels">...</div>
+                <div class="def-label">Định dạng:</div><div class="def-value">JPG/PNG</div>
+            </div>
+        </div>
+        <div class="section-card">
+            <div class="section-header">
+                <h3><i class='bx bx-cog'></i> Thông tin mô hình</h3>
+            </div>
+            <div class="def-grid">
+                <div class="def-label">Mô hình:</div><div class="def-value" id="modName">YOLOv8 Segmentation</div>
+                <div class="def-label">Task:</div><div class="def-value" id="modTask">Instance Segmentation</div>
+                <div class="def-label">Conf Threshold:</div><div class="def-value" id="modConf">...</div>
+                <div class="def-label">IoU Threshold:</div><div class="def-value" id="modIou">...</div>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Fullscreen Modal -->
+<div class="fullscreen-modal" id="fsModal" onclick="closeFullscreen()">
+    <span class="fullscreen-close">&times;</span>
+    <img id="fsImg" src="" alt="Fullscreen">
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -1048,8 +1317,9 @@ function renderReport(data) {
     imgOriginal.src = data.original_url;
     imgResult.src = data.overlay_url;
     // Reset tabs
-    document.querySelectorAll('.seg-btn').forEach(t => t.classList.remove('active'));
-    document.querySelector('.seg-btn[onclick*="overlay"]').classList.add('active');
+    document.querySelectorAll('.mode-btn').forEach(t => t.classList.remove('active'));
+    const defaultModeBtn = document.querySelector('.mode-btn[onclick*="overlay"]');
+    if (defaultModeBtn) defaultModeBtn.classList.add('active');
 
     if (data.pothole_count === 0) {
         document.getElementById('noDetectionState').style.display = 'block';
@@ -1063,11 +1333,15 @@ function renderReport(data) {
         const tbody = document.querySelector('#detailsTable tbody');
         tbody.innerHTML = '';
         data.detections.forEach(p => {
+            let confBadge = 'background: #fffbeb; color: #f59e0b; padding: 4px 8px; border-radius: 6px; font-weight: 600;';
+            if (p.confidence >= 0.8) confBadge = 'background: #ecfdf5; color: #10b981; padding: 4px 8px; border-radius: 6px; font-weight: 600;';
+            else if (p.confidence >= 0.6) confBadge = 'background: #eff6ff; color: #2563eb; padding: 4px 8px; border-radius: 6px; font-weight: 600;';
+            
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong>#${p.id}</strong></td>
                 <td>Pothole</td>
-                <td><span class="badge-conf">${(p.confidence * 100).toFixed(1)}%</span></td>
+                <td><span style="${confBadge}">${(p.confidence * 100).toFixed(1)}%</span></td>
                 <td>${p.pixel_area ? p.pixel_area.toLocaleString() : 0}</td>
                 <td>${p.image_percentage ? p.image_percentage.toFixed(2) : 0}%</td>
                 <td style="font-family: monospace;">(${p.bbox.x1}, ${p.bbox.y1}, ${p.bbox.x2}, ${p.bbox.y2})</td>
@@ -1084,7 +1358,11 @@ function renderReport(data) {
         }
 
         // Summary Text
-        const summary = `Phân tích hoàn tất. Hệ thống phát hiện <strong>${data.pothole_count}</strong> vùng ổ gà trong ảnh. Độ tin cậy trung bình đạt <strong>${(data.average_confidence * 100).toFixed(1)}%</strong>. Tổng vùng phân đoạn chiếm <strong>${data.damage_percentage.toFixed(2)}%</strong> (${data.total_damage_area.toLocaleString()} px²) diện tích ảnh. Thời gian xử lý AI là <strong>${(data.processing_time * 1000).toFixed(0)} ms</strong>.`;
+        const summary = `AI phát hiện <strong>${data.pothole_count}</strong> vùng ổ gà trong ảnh.<br><br>
+        ● Confidence TB: <strong>${(data.average_confidence * 100).toFixed(1)}%</strong><br>
+        ● Tỷ lệ ảnh hưởng: <strong>${data.damage_percentage.toFixed(2)}%</strong><br>
+        ● Vùng phát hiện: <strong>${data.total_damage_area.toLocaleString()} px²</strong><br>
+        ● Thời gian xử lý: <strong>${data.processing_time.toFixed(2)}s</strong>`;
         document.getElementById('reportSummaryText').innerHTML = summary;
     }
 
@@ -1106,22 +1384,7 @@ function renderReport(data) {
     let inf = data.speed.inference || 0;
     let post = data.speed.postprocess || 0;
     let totalMs = pre + inf + post;
-    
-    if (totalMs > 0) {
-        document.getElementById('perfTotal').textContent = totalMs.toFixed(1) + ' ms';
-        document.getElementById('valPre').textContent = pre.toFixed(1) + ' ms';
-        document.getElementById('valInf').textContent = inf.toFixed(1) + ' ms';
-        document.getElementById('valPost').textContent = post.toFixed(1) + ' ms';
-        
-        document.getElementById('barPre').style.width = (pre / totalMs * 100) + '%';
-        document.getElementById('barInf').style.width = (inf / totalMs * 100) + '%';
-        document.getElementById('barPost').style.width = (post / totalMs * 100) + '%';
-    } else {
-        document.getElementById('perfTotal').textContent = 'N/A';
-        document.getElementById('barPre').style.width = '33.3%';
-        document.getElementById('barInf').style.width = '33.3%';
-        document.getElementById('barPost').style.width = '33.3%';
-    }
+    // Removed DOM update for performance since UI doesn't have it anymore
 }
 
 function renderCharts(potholes) {
@@ -1148,7 +1411,7 @@ function renderCharts(potholes) {
 }
 
 function switchViewerTab(type, btn) {
-    document.querySelectorAll('.seg-btn').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.mode-btn').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
     
     const img = document.getElementById('viewResult');
@@ -1189,5 +1452,15 @@ function downloadResult() {
 function exportPDF() {
     alert("Chức năng xuất báo cáo PDF đang được phát triển.");
 }
+
+function openFullscreen(imgId) {
+    const src = document.getElementById(imgId).src;
+    document.getElementById('fsImg').src = src;
+    document.getElementById('fsModal').style.display = 'flex';
+}
+function closeFullscreen() {
+    document.getElementById('fsModal').style.display = 'none';
+}
+
 </script>
 {% endblock %}

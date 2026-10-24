@@ -2,100 +2,458 @@
 
 {% block title %}Nhận diện video - PotholeSeg{% endblock %}
 
+{% block head_extra %}
+{{ super() }}
+<style>
+/* CSS cho detect-video */
+.video-report-page {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+}
+
+.video-report-card {
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: 0 4px 18px rgba(15,23,42,0.04);
+}
+
+.video-report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.report-title h2 {
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 750;
+    color: #0F172A;
+    margin: 0;
+}
+
+.report-title p {
+    font-size: 14px;
+    color: #64748B;
+    margin: 4px 0 0 0;
+}
+
+.video-stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.video-stat-card {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    background: #FFFFFF !important;
+    border: 1px solid #E5EAF2 !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.video-stat-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 24px;
+}
+.video-stat-icon.red { background: #fee2e2; color: #ef4444; }
+.video-stat-icon.purple { background: #f3e8ff; color: #a855f7; }
+.video-stat-icon.orange { background: #ffedd5; color: #f97316; }
+.video-stat-icon.green { background: #dcfce7; color: #22c55e; }
+.video-stat-icon.blue { background: #dbeafe; color: #3b82f6; }
+
+.video-stat-value {
+    display: block;
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.video-stat-label {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    color: #64748B;
+}
+
+.video-comparison-section {
+    margin-top: 8px;
+}
+
+.video-section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0F172A;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start;
+    text-align: left !important;
+}
+
+.video-comparison-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 18px !important;
+    width: 100%;
+}
+
+.video-preview-card {
+    min-width: 0;
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    overflow: hidden;
+}
+
+.video-preview-header {
+    font-size: 15px;
+    font-weight: 600;
+    color: #172033;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.video-preview-card video {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: #000;
+    border-radius: 10px;
+}
+
+.video-info-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.video-info-card {
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+.video-info-card.no-pad {
+    padding: 0;
+}
+
+.video-summary-card {
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    border-radius: 14px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+.def-grid-half {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 16px;
+    row-gap: 12px;
+    font-size: 14px;
+}
+.def-label { color: #64748B; }
+.def-value { font-weight: 600; color: #0F172A; text-align: right; }
+
+.btn {
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.btn-primary { background: #2563EB; color: #FFFFFF; }
+.btn-primary:hover { background: #1D4ED8; }
+.btn-outline { background: #FFFFFF; border: 1px solid #2563EB; color: #2563EB; }
+.btn-outline:hover { background: #EFF6FF; }
+
+/* Upload */
+.upload-zone { border: 2px dashed #cbd5e1; border-radius: 16px; padding: 48px 24px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 24px; }
+.upload-icon { font-size: 40px; color: #2563eb; margin-bottom: 12px; }
+.upload-zone h3 { font-size: 18px; font-weight: 600; color: #0f172a; margin-bottom: 8px; }
+.upload-zone p { font-size: 14px; color: #64748b; }
+.upload-preview { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; overflow: hidden; margin-bottom: 24px; max-width: 800px; margin-left: auto; margin-right: auto; }
+.preview-video-container { background: #000; padding: 20px; text-align: center; }
+.preview-video-container video { width: 100%; max-width: 750px; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 12px; }
+.preview-info { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+
+/* Processing Overlay */
+.processing-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.processing-overlay.active { display: flex; }
+.processing-box { background: white; padding: 32px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center; width: 400px; border: 1px solid #e2e8f0; }
+.spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-top: 20px; }
+.progress { height: 100%; background: #2563eb; transition: width 0.3s ease; }
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .video-stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+    .video-info-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 850px) {
+    .video-comparison-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 768px) {
+    .video-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    .video-report-header { flex-direction: column; align-items: stretch; }
+}
+@media (max-width: 480px) {
+    .video-stats-grid { grid-template-columns: 1fr !important; }
+}
+</style>
+{% endblock %}
+
 {% block dashboard_content %}
-<div class="page-header">
-    <h1><i class='bx bx-video text-primary'></i> Nhận diện video</h1>
-    <p>Tải video mặt đường lên để phát hiện và phân vùng ổ gà theo từng frame</p>
-</div>
-
-{% if demo_mode %}
-<div class="demo-badge">
-    <i class='bx bx-info-circle'></i> DEMO MODE - Kết quả minh họa (cần best.pt cho kết quả thật)
-</div>
-{% endif %}
-
-<div class="card">
-    <!-- Upload Zone -->
-    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('videoInput').click()">
-        <div class="upload-icon"><i class='bx bx-video-plus'></i></div>
-        <h3>Kéo thả video vào đây</h3>
-        <p>hoặc click để chọn file • MP4, AVI, MOV</p>
-        <input type="file" id="videoInput" accept=".mp4,.avi,.mov" hidden>
+<div class="video-page">
+    <div class="page-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: 28px; font-weight: 700; color: #0F172A; display: flex; align-items: center; gap: 10px;"><i class='bx bx-video text-primary'></i> Nhận diện video</h1>
+        <p style="font-size: 15px; color: #64748B;">Tải video mặt đường lên để phát hiện và phân vùng ổ gà theo từng frame</p>
     </div>
 
-    <!-- Preview -->
-    <div class="upload-preview" id="uploadPreview">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-            <video id="previewVideo" src="" style="max-height: 200px; border-radius: 8px;" controls></video>
-            <div>
-                <p id="fileName" style="font-weight: 600;"></p>
-                <p id="fileSize" style="font-size: 13px; color: var(--gray-500);"></p>
-                <button class="btn btn-sm btn-secondary mt-1" onclick="resetUpload()">
-                    <i class='bx bx-x'></i> Xóa
-                </button>
+    {% if demo_mode %}
+    <div style="background: #eff6ff; color: #1e3a8a; padding: 12px 16px; border-radius: 12px; margin-bottom: 24px; font-size: 14px; font-weight: 500; border: 1px solid #bfdbfe;">
+        <i class='bx bx-info-circle'></i> DEMO MODE - Kết quả minh họa (cần best.pt cho kết quả thật)
+    </div>
+    {% endif %}
+
+    <!-- Upload/Input Area -->
+    <div id="inputSection">
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('videoInput').click()">
+            <div class="upload-icon"><i class='bx bx-video-plus'></i></div>
+            <h3>Kéo thả video vào đây</h3>
+            <p>hoặc click để chọn file • MP4, AVI, MOV</p>
+            <input type="file" id="videoInput" accept=".mp4,.avi,.mov" hidden>
+        </div>
+
+        <!-- Preview -->
+        <div class="upload-preview" id="uploadPreview" style="display: none;">
+            <div class="preview-video-container">
+                <video id="previewVideo" src="" controls></video>
+            </div>
+            <div class="preview-info">
+                <div>
+                    <h4 id="fileName" style="margin: 0; font-size: 15px; font-weight: 600; color: #0F172A;"></h4>
+                    <p id="fileSize" style="margin: 4px 0 0; font-size: 13px; color: #64748B;"></p>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-outline" onclick="resetUpload()">
+                        <i class='bx bx-trash'></i> Xóa
+                    </button>
+                    <button class="btn btn-primary" id="analyzeBtn" onclick="analyzeVideo()">
+                        <i class='bx bx-play-circle'></i> Phân tích video
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Analyze Button -->
-    <div style="text-align: center; margin-top: 20px;" id="analyzeSection" class="d-none">
-        <button class="btn btn-primary btn-lg" onclick="analyzeVideo()">
-            <i class='bx bx-analyse'></i> Phân tích video
-        </button>
-    </div>
-</div>
-
-<!-- Processing Overlay -->
-<div class="processing-overlay" id="processingOverlay">
-    <div class="processing-box">
-        <div class="spinner"></div>
-        <h3>Đang xử lý video...</h3>
-        <p id="processingStatus" style="color: var(--gray-500); font-size: 14px;">Đang phân tích từng frame</p>
-        <div class="progress-bar mt-2">
-            <div class="progress" id="progressBar" style="width: 0%"></div>
+    <!-- Processing Overlay -->
+    <div class="processing-overlay" id="processingOverlay">
+        <div class="processing-box">
+            <div class="spinner"></div>
+            <h3 style="margin-top: 20px; font-size: 18px; color: #0F172A;">Đang phân tích video...</h3>
+            <p id="processingStatus" style="color: #64748B; font-size: 14px; margin-top: 8px; line-height: 1.5;">AI đang xử lý từng frame<br>Quá trình này có thể mất một lúc.</p>
+            <div class="progress-bar">
+                <div class="progress" id="progressBar" style="width: 0%"></div>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Result Area -->
-<div class="result-area" id="resultArea">
-    <div class="card">
-        <h3 style="margin-bottom: 20px;"><i class='bx bx-check-circle text-success'></i> Kết quả phân tích video</h3>
-
-        <div style="text-align: center; margin-bottom: 24px;">
-            <video id="resultVideo" controls style="max-width: 100%; max-height: 500px; border-radius: 10px; border: 1px solid var(--gray-200);">
-            </video>
-        </div>
-
-        <div class="result-stats">
-            <div class="result-stat">
-                <div class="value" id="resPotholes">0</div>
-                <div class="label">Tổng ổ gà phát hiện</div>
-            </div>
-            <div class="result-stat">
-                <div class="value" id="resConf">0%</div>
-                <div class="label">Confidence trung bình</div>
-            </div>
-            <div class="result-stat">
-                <div class="value" id="resFps">0</div>
-                <div class="label">FPS</div>
-            </div>
-            <div class="result-stat">
-                <div class="value" id="resFrames">0</div>
-                <div class="label">Tổng frames</div>
+    <!-- Result Area -->
+    <div id="resultArea" style="display: none;">
+        
+        <!-- Report Card -->
+        <div class="video-report-card">
+            <div class="video-report-header">
+                <div class="report-title">
+                    <h2 style="display: flex; align-items: center; gap: 8px;"><i class='bx bx-file'></i> BÁO CÁO PHÂN TÍCH VIDEO</h2>
+                    <p>AI Video Pothole Segmentation Report</p>
+                    <div style="display: flex; align-items: center; gap: 8px; color: #64748B; font-size: 13px; margin-top: 12px;">
+                        <span style="background: #d1fae5; color: #059669; padding: 4px 10px; border-radius: 6px; font-weight: 600;">HOÀN THÀNH</span>
+                        <span>|</span>
+                        <span><strong id="repFilename">...</strong></span>
+                        <span>|</span>
+                        <span>YOLOv8 Segmentation</span>
+                        <span>|</span>
+                        <span id="repTime">...</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-outline" onclick="resetUpload()">Video khác</button>
+                    <a id="downloadResultBtn" href="#" class="btn btn-primary" download>Tải video kết quả</a>
+                </div>
             </div>
         </div>
 
-        <div class="result-stat" style="text-align: center; padding: 12px; background: var(--gray-50); border-radius: 8px;">
-            <div class="label">Thời gian xử lý</div>
-            <div class="value" id="resTime" style="font-size: 18px;">0s</div>
+        <!-- 5 KPIs -->
+        <div class="video-stats-grid">
+            <div class="video-stat-card">
+                <div class="video-stat-icon red"><i class='bx bx-target-lock'></i></div>
+                <div>
+                    <span class="video-stat-value" id="statCount">0</span>
+                    <span class="video-stat-label">Lượt phát hiện</span>
+                </div>
+            </div>
+            <div class="video-stat-card">
+                <div class="video-stat-icon purple"><i class='bx bx-check-shield'></i></div>
+                <div>
+                    <span class="video-stat-value" id="statConf">0%</span>
+                    <span class="video-stat-label">Confidence TB</span>
+                </div>
+            </div>
+            <div class="video-stat-card">
+                <div class="video-stat-icon orange"><i class='bx bx-film'></i></div>
+                <div>
+                    <span class="video-stat-value" id="statFrames">0</span>
+                    <span class="video-stat-label">Tổng Frames</span>
+                </div>
+            </div>
+            <div class="video-stat-card">
+                <div class="video-stat-icon green"><i class='bx bx-tachometer'></i></div>
+                <div>
+                    <span class="video-stat-value" id="statFps">0</span>
+                    <span class="video-stat-label">Tốc độ video</span>
+                </div>
+            </div>
+            <div class="video-stat-card">
+                <div class="video-stat-icon blue"><i class='bx bx-stopwatch'></i></div>
+                <div>
+                    <span class="video-stat-value" id="statTime">0s</span>
+                    <span class="video-stat-label">Thời gian xử lý</span>
+                </div>
+            </div>
         </div>
 
-        <div class="result-actions mt-2">
-            <button class="btn btn-outline" onclick="resetUpload()">
-                <i class='bx bx-refresh'></i> Phân tích video khác
-            </button>
+        <!-- Video Visualization -->
+        <div class="video-comparison-section">
+            <div class="video-section-title">
+                <i class='bx bx-video'></i> Trực quan hóa kết quả video
+            </div>
+            <div class="video-comparison-grid">
+                <div class="video-preview-card">
+                    <div class="video-preview-header">
+                        <span><i class='bx bx-movie-play'></i> Video gốc</span>
+                    </div>
+                    <video id="viewOriginal" src="" controls></video>
+                </div>
+                <div class="video-preview-card">
+                    <div class="video-preview-header">
+                        <span><i class='bx bx-play-circle'></i> Kết quả AI - Mask + Segmentation</span>
+                    </div>
+                    <video id="viewResult" src="" controls></video>
+                </div>
+            </div>
         </div>
+
+        <!-- Info Cards Grid -->
+        <div class="video-info-grid">
+            <!-- Input Info -->
+            <div class="video-info-card">
+                <div class="video-section-title" style="font-size: 16px;"><i class='bx bx-info-circle'></i> Thông tin video</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+                    <div class="def-grid-half">
+                        <div class="def-label">Tên file:</div><div class="def-value" id="infoFilename">...</div>
+                        <div class="def-label">Dung lượng:</div><div class="def-value" id="infoSize">...</div>
+                        <div class="def-label">Độ phân giải:</div><div class="def-value" id="infoResolution">...</div>
+                        <div class="def-label">Định dạng:</div><div class="def-value" id="infoFormat">...</div>
+                    </div>
+                    <div class="def-grid-half">
+                        <div class="def-label">Thời lượng:</div><div class="def-value" id="infoDuration">...</div>
+                        <div class="def-label">FPS:</div><div class="def-value" id="infoFps">...</div>
+                        <div class="def-label">Tổng frames:</div><div class="def-value" id="infoFrames">...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Model Info -->
+            <div class="video-info-card no-pad">
+                <div class="video-section-title" style="font-size: 16px; padding: 18px 18px 0 18px; margin-bottom: 12px;"><i class='bx bx-cog'></i> Thông tin mô hình</div>
+                <div style="padding: 0 18px 18px 18px;">
+                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
+                        <span style="color: #64748B; font-size: 14px;">Mô hình:</span>
+                        <span style="font-weight: 600; color: #0F172A; font-size: 14px;" id="modName">YOLOv8 Segmentation</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
+                        <span style="color: #64748B; font-size: 14px;">Task:</span>
+                        <span style="font-weight: 600; color: #0F172A; font-size: 14px;" id="modTask">Instance Segmentation</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
+                        <span style="color: #64748B; font-size: 14px;">Confidence threshold:</span>
+                        <span style="font-weight: 600; color: #0F172A; font-size: 14px;" id="modConf">0.5 (Mặc định)</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                        <span style="color: #64748B; font-size: 14px;">IoU threshold:</span>
+                        <span style="font-weight: 600; color: #0F172A; font-size: 14px;" id="modIou">0.7 (Mặc định)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Card -->
+        <div class="video-summary-card">
+            <div class="video-section-title" style="font-size: 16px;"><i class='bx bx-chart'></i> Tóm tắt phân tích</div>
+            <p style="color: #475569; font-size: 14px; margin-bottom: 24px; margin-top: 0;" id="reportSummaryText">...</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                <!-- Confidence Bar -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 8px;">
+                        <span>Độ tin cậy trung bình</span>
+                        <span id="summaryConfText">0%</span>
+                    </div>
+                    <div style="height: 6px; background: #E2E8F0; border-radius: 4px; overflow: hidden;">
+                        <div id="summaryConfBar" style="height: 100%; background: #3B82F6; width: 0%; transition: width 1s ease;"></div>
+                    </div>
+                </div>
+                <!-- Speed Bar -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 8px;">
+                        <span>Tốc độ xử lý trung bình</span>
+                        <span id="summarySpeedText">0 frames/giây</span>
+                    </div>
+                    <div style="height: 6px; background: #E2E8F0; border-radius: 4px; overflow: hidden;">
+                        <div id="summarySpeedBar" style="height: 100%; background: #10B981; width: 0%; transition: width 1s ease;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}
@@ -106,10 +464,20 @@
 const uploadZone = document.getElementById('uploadZone');
 const videoInput = document.getElementById('videoInput');
 const uploadPreview = document.getElementById('uploadPreview');
-const analyzeSection = document.getElementById('analyzeSection');
+const inputSection = document.getElementById('inputSection');
+const analyzeBtn = document.getElementById('analyzeBtn');
 const resultArea = document.getElementById('resultArea');
 const processingOverlay = document.getElementById('processingOverlay');
+const previewVideo = document.getElementById('previewVideo');
 let selectedFile = null;
+let videoMeta = { width: 0, height: 0, duration: 0 };
+
+// Capture video metadata when loaded
+previewVideo.onloadedmetadata = function() {
+    videoMeta.width = this.videoWidth;
+    videoMeta.height = this.videoHeight;
+    videoMeta.duration = this.duration;
+};
 
 // Drag & Drop
 uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
@@ -127,17 +495,17 @@ videoInput.addEventListener('change', (e) => {
 function handleFile(file) {
     const ext = file.name.split('.').pop().toLowerCase();
     if (!['mp4', 'avi', 'mov'].includes(ext)) {
-        alert('Chỉ hỗ trợ file MP4, AVI, MOV!');
+        showError('Chỉ hỗ trợ file MP4, AVI, MOV!');
         return;
     }
     selectedFile = file;
-    document.getElementById('previewVideo').src = URL.createObjectURL(file);
+    const url = URL.createObjectURL(file);
+    previewVideo.src = url;
     document.getElementById('fileName').textContent = file.name;
     document.getElementById('fileSize').textContent = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
 
     uploadZone.style.display = 'none';
     uploadPreview.style.display = 'block';
-    analyzeSection.classList.remove('d-none');
     resultArea.style.display = 'none';
 }
 
@@ -146,58 +514,118 @@ function resetUpload() {
     videoInput.value = '';
     uploadZone.style.display = 'block';
     uploadPreview.style.display = 'none';
-    analyzeSection.classList.add('d-none');
+    inputSection.style.display = 'block';
     resultArea.style.display = 'none';
+    if (previewVideo.src) {
+        URL.revokeObjectURL(previewVideo.src);
+        previewVideo.src = '';
+    }
 }
 
-function analyzeVideo() {
-    if (!selectedFile) { alert('Vui lòng chọn video!'); return; }
+function showError(msg) {
+    alert(msg);
+}
+
+async function analyzeVideo() {
+    if (!selectedFile) { showError('Vui lòng chọn video!'); return; }
 
     const formData = new FormData();
     formData.append('file', selectedFile);
 
     processingOverlay.classList.add('active');
+    analyzeBtn.disabled = true;
     let progress = 0;
     const progressBar = document.getElementById('progressBar');
     const progressInterval = setInterval(() => {
-        progress = Math.min(progress + Math.random() * 5, 90);
+        progress = Math.min(progress + Math.random() * 2, 95);
         progressBar.style.width = progress + '%';
-        document.getElementById('processingStatus').textContent =
-            `Đang xử lý: ${Math.round(progress)}%`;
-    }, 500);
+        document.getElementById('processingStatus').innerHTML = `Đang xử lý: ${Math.round(progress)}%<br>AI đang chạy trên từng frame`;
+    }, 1000);
 
-    fetch('/detect-video', {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+        const response = await fetch('/detect-video', { method: 'POST', body: formData });
+        let data;
+        try { data = await response.json(); } catch(e) { throw new Error('Server trả về phản hồi không hợp lệ'); }
+        
+        if (!response.ok || !data.success) throw new Error(data.error || 'Lỗi máy chủ');
+
         clearInterval(progressInterval);
         progressBar.style.width = '100%';
 
         setTimeout(() => {
-            processingOverlay.classList.remove('active');
-
-            if (data.success) {
-                document.getElementById('resultVideo').src = data.result_video;
-                document.getElementById('resPotholes').textContent = data.pothole_count;
-                document.getElementById('resConf').textContent = data.avg_confidence.toFixed(1) + '%';
-                document.getElementById('resFps').textContent = data.fps;
-                document.getElementById('resFrames').textContent = data.total_frames;
-                document.getElementById('resTime').textContent = data.processing_time.toFixed(3) + 's';
-
-                resultArea.style.display = 'block';
-                resultArea.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                alert('Lỗi: ' + (data.error || 'Không thể phân tích video'));
+            inputSection.style.display = 'none';
+            resultArea.style.display = 'block';
+            try {
+                renderReport(data);
+            } catch(renderErr) {
+                console.error("Lỗi render JS:", renderErr);
+                showError("Lỗi khi hiển thị báo cáo: " + renderErr.message);
             }
+            resultArea.scrollIntoView({ behavior: 'smooth' });
         }, 500);
-    })
-    .catch(err => {
-        clearInterval(progressInterval);
-        processingOverlay.classList.remove('active');
-        alert('Lỗi kết nối: ' + err.message);
-    });
+
+    } catch (err) {
+        let msg = err.message;
+        if (msg.includes('Failed to fetch')) msg = 'Mất kết nối tới máy chủ. Vui lòng kiểm tra lại.';
+        showError(msg);
+    } finally {
+        setTimeout(() => {
+            clearInterval(progressInterval);
+            progressBar.style.width = '0%';
+            processingOverlay.classList.remove('active');
+            analyzeBtn.disabled = false;
+        }, 500);
+    }
+}
+
+function renderReport(data) {
+    const now = new Date();
+    document.getElementById('repFilename').textContent = selectedFile.name;
+    document.getElementById('repTime').textContent = now.toLocaleString('vi-VN');
+
+    // Stats
+    document.getElementById('statCount').textContent = data.pothole_count;
+    document.getElementById('statConf').textContent = data.avg_confidence.toFixed(1) + '%';
+    document.getElementById('statFrames').textContent = data.total_frames;
+    document.getElementById('statFps').textContent = data.fps;
+    document.getElementById('statTime').textContent = data.processing_time.toFixed(2) + 's';
+
+    // Videos
+    document.getElementById('viewOriginal').src = URL.createObjectURL(selectedFile);
+    document.getElementById('viewResult').src = data.result_video;
+    
+    // Download link
+    document.getElementById('downloadResultBtn').href = data.result_video;
+
+    // Summary Text and Progress Bars
+    let speed = 0;
+    if (data.processing_time > 0) {
+        speed = (data.total_frames / data.processing_time).toFixed(2);
+    }
+    const summary = `Hệ thống đã xử lý xong <strong>${data.total_frames} frame</strong> trong <strong>${data.processing_time.toFixed(2)} giây</strong> và ghi nhận tổng cộng <strong>${data.pothole_count} lượt phát hiện ổ gà.</strong>`;
+    
+    document.getElementById('reportSummaryText').innerHTML = summary;
+    
+    document.getElementById('summaryConfText').textContent = data.avg_confidence.toFixed(1) + '%';
+    document.getElementById('summaryConfBar').style.width = data.avg_confidence.toFixed(1) + '%';
+    
+    // For speed progress bar, max out at 60 FPS visual scale for instance
+    document.getElementById('summarySpeedText').textContent = speed + ' frames/giây';
+    let speedPct = speed > 0 ? (Math.min(speed / 60, 1) * 100) : 0;
+    document.getElementById('summarySpeedBar').style.width = speedPct + '%';
+
+    // Info Cards
+    document.getElementById('infoFilename').textContent = selectedFile.name;
+    document.getElementById('infoSize').textContent = (selectedFile.size / (1024 * 1024)).toFixed(2) + ' MB';
+    document.getElementById('infoResolution').textContent = videoMeta.width && videoMeta.height ? `${videoMeta.width} × ${videoMeta.height}` : 'Unknown';
+    document.getElementById('infoFormat').textContent = selectedFile.name.split('.').pop().toUpperCase();
+    document.getElementById('infoDuration').textContent = videoMeta.duration ? videoMeta.duration.toFixed(1) + 's' : 'Unknown';
+    document.getElementById('infoFps').textContent = data.fps;
+    document.getElementById('infoFrames').textContent = data.total_frames;
+    
+    if (data.demo_mode) {
+        document.getElementById('modName').textContent = 'YOLOv8 Segmentation (DEMO)';
+    }
 }
 </script>
 {% endblock %}

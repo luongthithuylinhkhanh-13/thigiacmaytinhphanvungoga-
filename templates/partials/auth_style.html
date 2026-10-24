@@ -1,0 +1,183 @@
+<style>
+/* Override styles for Registration page to match the new design */
+.auth-hero {
+    background-image: url("{{ url_for('static', filename='images/pothole-ai-bg.png') }}");
+    background-size: cover;
+    background-position: center center;
+    position: relative;
+    padding-top: 70px;
+    min-height: 100vh;
+}
+.auth-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(5, 25, 50, 0.68) 0%,
+        rgba(5, 25, 50, 0.48) 28%,
+        rgba(5, 25, 50, 0.18) 55%,
+        rgba(5, 25, 50, 0.02) 75%
+    );
+    z-index: 0;
+}
+.auth-hero-container {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 35px 4%;
+    min-height: calc(100vh - 70px);
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(400px, 0.65fr);
+    align-items: center;
+    gap: 80px;
+    position: relative;
+    z-index: 1;
+}
+.auth-hero-content h1 {
+    color: #ffffff;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+.auth-hero-content h1 .text-highlight {
+    color: #2196F3;
+    -webkit-text-fill-color: #2196F3;
+}
+.auth-hero-desc {
+    color: #F1F5F9;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    font-weight: 500;
+}
+.auth-hero-feature {
+    color: #ffffff;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    font-weight: 600;
+}
+.auth-feature-icon {
+    background: #ffffff;
+    color: var(--primary);
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.auth-hero-feature:hover .auth-feature-icon {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+/* Card */
+.auth-hero-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 18px 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 1px solid #f1f5f9;
+    width: 100%;
+    max-width: 335px;
+}
+.auth-hero-form-wrap {
+    display: flex;
+    justify-content: flex-end;
+}
+.auth-hero-card h2 {
+    color: #0f172a;
+    font-size: 22px;
+    margin-bottom: 2px;
+}
+.auth-hero-card .subtitle {
+    margin-bottom: 16px;
+    font-size: 12px;
+}
+.form-group {
+    margin-bottom: 8px;
+}
+.form-label {
+    margin-bottom: 4px;
+    font-size: 12px;
+}
+.form-input {
+    height: 38px;
+    padding: 0 10px 0 36px !important;
+    font-size: 13px !important;
+}
+.form-input-icon .icon {
+    font-size: 16px;
+    left: 10px;
+}
+.form-input-icon .toggle-password {
+    font-size: 16px;
+    right: 10px;
+}
+.btn-primary.w-100 {
+    width: 100%;
+    height: 40px;
+    padding: 0;
+    font-size: 14px;
+    margin-top: 4px;
+    margin-bottom: 4px !important;
+}
+.social-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 8px 0;
+    color: #64748b;
+    font-size: 12px;
+}
+.social-divider::before,
+.social-divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #e2e8f0;
+}
+.social-divider span {
+    padding: 0 10px;
+}
+.social-login-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #475569;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    font-size: 12px;
+}
+.btn-social i {
+    font-size: 16px;
+}
+.btn-social:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+.auth-hero-card-footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 12px;
+}
+
+@media (max-width: 992px) {
+    .auth-hero-container {
+        grid-template-columns: 1fr;
+        justify-content: center;
+    }
+    .auth-hero::before {
+        background: rgba(246, 248, 252, 0.92);
+    }
+    .auth-hero-form-wrap {
+        justify-content: center;
+    }
+}
+</style>

@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Đăng ký - PotholeSeg{% endblock %}
+{% block head_extra %}
+{% include "partials/auth_style.html" %}
+{% endblock %}
 
 {% block body %}
 {% include "partials/navbar.html" %}
@@ -9,33 +12,7 @@
 
     <div class="auth-hero-container">
         <!-- LEFT: Nội dung giới thiệu -->
-        <div class="auth-hero-content">
-            <h1>Phát hiện và phân vùng<br><span class="text-highlight">ổ gà bằng AI</span></h1>
-            <p class="auth-hero-desc">
-                Hệ thống ứng dụng thị giác máy tính và mô hình<br>
-                YOLOv8 Segmentation để phát hiện và phân vùng<br>
-                ổ gà trên mặt đường.
-            </p>
-
-            <div class="auth-hero-features">
-                <div class="auth-hero-feature">
-                    <div class="auth-feature-icon"><i class='bx bx-check-circle'></i></div>
-                    <span>Phát hiện ổ gà chính xác</span>
-                </div>
-                <div class="auth-hero-feature">
-                    <div class="auth-feature-icon"><i class='bx bx-check-circle'></i></div>
-                    <span>Xử lý nhanh chóng</span>
-                </div>
-                <div class="auth-hero-feature">
-                    <div class="auth-feature-icon"><i class='bx bx-check-circle'></i></div>
-                    <span>Hỗ trợ ảnh và video</span>
-                </div>
-                <div class="auth-hero-feature">
-                    <div class="auth-feature-icon"><i class='bx bx-check-circle'></i></div>
-                    <span>Lưu lịch sử phân tích</span>
-                </div>
-            </div>
-        </div>
+        {% include "partials/auth_left.html" %}
 
         <!-- RIGHT: Form đăng ký -->
         <div class="auth-hero-form-wrap">
@@ -84,10 +61,23 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 btn-lg">
+                    <button type="submit" class="btn btn-primary w-100 btn-lg" style="margin-bottom: 5px;">
                         <i class='bx bx-user-plus'></i> Đăng ký
                     </button>
                 </form>
+
+                <div class="social-divider">
+                    <span>Hoặc đăng ký với</span>
+                </div>
+
+                <div class="social-login-grid">
+                    <button type="button" class="btn-social">
+                        <i class='bx bxl-google' style='color:#ea4335;'></i> Google
+                    </button>
+                    <button type="button" class="btn-social">
+                        <i class='bx bxl-github' style='color:#333;'></i> GitHub
+                    </button>
+                </div>
 
                 <div class="auth-hero-card-footer">
                     Đã có tài khoản? <a href="{{ url_for('login') }}">Đăng nhập ngay</a>
