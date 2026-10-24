@@ -2,30 +2,29 @@
 
 {% block title %}Nhận diện video - PotholeSeg{% endblock %}
 
-{% block head %}
+{% block head_extra %}
 {{ super() }}
 <style>
 /* CSS cho detect-video */
-.video-page {
+.video-report-page {
     width: 100%;
     max-width: 1500px;
     margin: 0 auto;
 }
 
-.video-report {
+.video-report-card {
     background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 16px;
-    padding: 22px;
+    border: 1px solid #E5EAF2;
+    border-radius: 14px;
+    padding: 18px 22px;
     box-shadow: 0 4px 18px rgba(15,23,42,0.04);
 }
 
-.report-header {
+.video-report-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 24px;
-    margin-bottom: 20px;
 }
 
 .report-title h2 {
@@ -42,147 +41,138 @@
     margin: 4px 0 0 0;
 }
 
-.video-metrics {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 14px;
+.video-stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 14px !important;
     width: 100%;
-    margin: 20px 0;
+    margin-bottom: 24px;
 }
 
-.metric-card {
-    min-width: 0;
-    min-height: 105px;
-    display: flex;
+.video-stat-card {
+    display: flex !important;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
+    min-width: 0;
     background: #FFFFFF !important;
-    border: 1px solid #E2E8F0;
-    border-radius: 14px;
-    padding: 16px 18px;
+    border: 1px solid #E5EAF2 !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
-.metric-icon {
-    width: 46px;
-    height: 46px;
-    flex: 0 0 46px;
+.video-stat-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 24px;
 }
-.metric-icon.red { background: #fee2e2; color: #ef4444; }
-.metric-icon.purple { background: #f3e8ff; color: #a855f7; }
-.metric-icon.orange { background: #ffedd5; color: #f97316; }
-.metric-icon.green { background: #dcfce7; color: #22c55e; }
-.metric-icon.blue { background: #dbeafe; color: #3b82f6; }
+.video-stat-icon.red { background: #fee2e2; color: #ef4444; }
+.video-stat-icon.purple { background: #f3e8ff; color: #a855f7; }
+.video-stat-icon.orange { background: #ffedd5; color: #f97316; }
+.video-stat-icon.green { background: #dcfce7; color: #22c55e; }
+.video-stat-icon.blue { background: #dbeafe; color: #3b82f6; }
 
-.metric-value {
+.video-stat-value {
     display: block;
-    font-size: 25px;
-    line-height: 1.15;
-    font-weight: 750;
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: 700;
     color: #0F172A;
 }
 
-.metric-label {
+.video-stat-label {
     display: block;
-    margin-top: 5px;
+    margin-top: 4px;
     font-size: 13px;
     color: #64748B;
 }
 
-.video-comparison {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
+.video-comparison-section {
+    margin-top: 8px;
+}
+
+.video-section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0F172A;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start;
+    text-align: left !important;
+}
+
+.video-comparison-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 18px !important;
     width: 100%;
 }
 
-.video-panel {
+.video-preview-card {
     min-width: 0;
     background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 14px;
-    padding: 12px;
+    border: 1px solid #E5EAF2;
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
     overflow: hidden;
 }
-.video-panel-header {
-    font-size: 14px;
-    font-weight: 700;
-    color: #0F172A;
-    margin-bottom: 12px;
+
+.video-preview-header {
+    font-size: 15px;
+    font-weight: 600;
+    color: #172033;
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
 }
-.video-panel-header span.badge {
-    background: #f1f5f9;
-    padding: 4px 10px;
-    border-radius: 6px;
-    color: #475569;
-    font-size: 12px;
-}
-.video-panel-header span.badge.ai {
-    background: #eff6ff;
-    color: #2563eb;
-}
 
-.video-panel video {
-    display: block;
-    width: 100%;
-    height: auto;
+.video-preview-card video {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
     aspect-ratio: 16 / 9;
     object-fit: contain;
     background: #000;
     border-radius: 10px;
 }
 
-.visual-section {
-    margin-top: 18px;
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 16px;
-    padding: 18px;
-}
-
-.section-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #0F172A;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.analysis-summary {
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 14px;
-    padding: 18px;
-    margin-top: 16px;
-    color: #1e3a8a;
-    font-size: 14px;
-    line-height: 1.7;
-}
-
-.video-details-grid {
+.video-info-grid {
     display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr;
+    grid-template-columns: 1.2fr 1fr;
     gap: 16px;
-    margin-top: 16px;
+    margin-top: 20px;
 }
 
-.info-card {
-    min-width: 0;
+.video-info-card {
     background: #FFFFFF;
-    border: 1px solid #E2E8F0;
+    border: 1px solid #E5EAF2;
     border-radius: 14px;
     padding: 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
 }
 
-.def-grid {
+.video-info-card.no-pad {
+    padding: 0;
+}
+
+.video-summary-card {
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    border-radius: 14px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+.def-grid-half {
     display: grid;
     grid-template-columns: auto 1fr;
     column-gap: 16px;
@@ -194,8 +184,8 @@
 
 .btn {
     min-height: 40px;
-    padding: 0 15px;
-    border-radius: 9px;
+    padding: 0 16px;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
     display: inline-flex;
@@ -205,70 +195,25 @@
     cursor: pointer;
     border: none;
     text-decoration: none;
+    transition: 0.2s;
 }
-.btn-primary {
-    background: #2563EB;
-    color: #FFFFFF;
-}
-.btn-outline {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    color: #0F172A;
-}
+.btn-primary { background: #2563EB; color: #FFFFFF; }
+.btn-primary:hover { background: #1D4ED8; }
+.btn-outline { background: #FFFFFF; border: 1px solid #2563EB; color: #2563EB; }
+.btn-outline:hover { background: #EFF6FF; }
 
 /* Upload */
-.upload-zone {
-    border: 2px dashed #cbd5e1;
-    border-radius: 16px;
-    padding: 48px 24px;
-    text-align: center;
-    background: #f8fafc;
-    cursor: pointer;
-    margin-bottom: 24px;
-}
-.upload-icon {
-    font-size: 40px;
-    color: #2563eb;
-    margin-bottom: 12px;
-}
+.upload-zone { border: 2px dashed #cbd5e1; border-radius: 16px; padding: 48px 24px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 24px; }
+.upload-icon { font-size: 40px; color: #2563eb; margin-bottom: 12px; }
 .upload-zone h3 { font-size: 18px; font-weight: 600; color: #0f172a; margin-bottom: 8px; }
 .upload-zone p { font-size: 14px; color: #64748b; }
-
-.upload-preview {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 24px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-}
-.preview-video-container {
-    background: #000;
-    padding: 20px;
-    text-align: center;
-}
-.preview-video-container video {
-    width: 100%;
-    max-width: 750px;
-    aspect-ratio: 16 / 9;
-    object-fit: contain;
-    border-radius: 12px;
-}
-.preview-info {
-    padding: 16px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+.upload-preview { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; overflow: hidden; margin-bottom: 24px; max-width: 800px; margin-left: auto; margin-right: auto; }
+.preview-video-container { background: #000; padding: 20px; text-align: center; }
+.preview-video-container video { width: 100%; max-width: 750px; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 12px; }
+.preview-info { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
 
 /* Processing Overlay */
-.processing-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(255,255,255,0.9); z-index: 9999;
-    display: none; align-items: center; justify-content: center;
-}
+.processing-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; }
 .processing-overlay.active { display: flex; }
 .processing-box { background: white; padding: 32px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center; width: 400px; border: 1px solid #e2e8f0; }
 .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
@@ -278,18 +223,18 @@
 
 /* Responsive */
 @media (max-width: 1200px) {
-    .video-metrics { grid-template-columns: repeat(3, 1fr); }
-    .video-details-grid { grid-template-columns: repeat(2, 1fr); }
+    .video-stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+    .video-info-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 850px) {
+    .video-comparison-grid { grid-template-columns: 1fr !important; }
 }
 @media (max-width: 768px) {
-    .video-metrics { grid-template-columns: 1fr 1fr; }
-    .video-comparison { grid-template-columns: 1fr; }
-    .video-details-grid { grid-template-columns: 1fr; }
-    .report-header { flex-direction: column; align-items: stretch; }
-    .report-actions { display: flex; flex-direction: column; }
+    .video-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    .video-report-header { flex-direction: column; align-items: stretch; }
 }
 @media (max-width: 480px) {
-    .video-metrics { grid-template-columns: 1fr; }
+    .video-stats-grid { grid-template-columns: 1fr !important; }
 }
 </style>
 {% endblock %}
@@ -351,85 +296,85 @@
     </div>
 
     <!-- Result Area -->
-    <div class="video-report" id="resultArea" style="display: none;">
+    <div id="resultArea" style="display: none;">
         
-        <!-- Report Header -->
-        <div class="report-header">
-            <div class="report-title">
-                <h2>BÁO CÁO PHÂN TÍCH VIDEO</h2>
-                <p>AI Video Pothole Segmentation Report</p>
+        <!-- Report Card -->
+        <div class="video-report-card">
+            <div class="video-report-header">
+                <div class="report-title">
+                    <h2 style="display: flex; align-items: center; gap: 8px;"><i class='bx bx-file'></i> BÁO CÁO PHÂN TÍCH VIDEO</h2>
+                    <p>AI Video Pothole Segmentation Report</p>
+                    <div style="display: flex; align-items: center; gap: 8px; color: #64748B; font-size: 13px; margin-top: 12px;">
+                        <span style="background: #d1fae5; color: #059669; padding: 4px 10px; border-radius: 6px; font-weight: 600;">HOÀN THÀNH</span>
+                        <span>|</span>
+                        <span><strong id="repFilename">...</strong></span>
+                        <span>|</span>
+                        <span>YOLOv8 Segmentation</span>
+                        <span>|</span>
+                        <span id="repTime">...</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-outline" onclick="resetUpload()">Video khác</button>
+                    <a id="downloadResultBtn" href="#" class="btn btn-primary" download>Tải video kết quả</a>
+                </div>
             </div>
-            <div class="report-actions">
-                <button class="btn btn-outline" onclick="resetUpload()"><i class='bx bx-refresh'></i> Video khác</button>
-                <a id="downloadResultBtn" href="#" class="btn btn-primary" download><i class='bx bx-download'></i> Tải video kết quả</a>
-            </div>
-        </div>
-
-        <div style="display: flex; align-items: center; gap: 12px; color: #64748B; font-size: 13px; margin-bottom: 24px;">
-            <span style="background: #d1fae5; color: #059669; padding: 4px 10px; border-radius: 20px; font-weight: 600;"><i class='bx bx-check'></i> HOÀN THÀNH</span>
-            <span><i class='bx bx-video'></i> <strong id="repFilename">...</strong></span>
-            <span>|</span>
-            <span><i class='bx bx-brain'></i> YOLOv8 Segmentation</span>
-            <span>|</span>
-            <span><i class='bx bx-time'></i> <strong id="repTime">...</strong></span>
         </div>
 
         <!-- 5 KPIs -->
-        <div class="video-metrics">
-            <div class="metric-card">
-                <div class="metric-icon red"><i class='bx bx-target-lock'></i></div>
+        <div class="video-stats-grid">
+            <div class="video-stat-card">
+                <div class="video-stat-icon red"><i class='bx bx-target-lock'></i></div>
                 <div>
-                    <span class="metric-value" id="statCount">0</span>
-                    <span class="metric-label">Lượt phát hiện</span>
+                    <span class="video-stat-value" id="statCount">0</span>
+                    <span class="video-stat-label">Lượt phát hiện</span>
                 </div>
             </div>
-            <div class="metric-card">
-                <div class="metric-icon purple"><i class='bx bx-check-shield'></i></div>
+            <div class="video-stat-card">
+                <div class="video-stat-icon purple"><i class='bx bx-check-shield'></i></div>
                 <div>
-                    <span class="metric-value" id="statConf">0%</span>
-                    <span class="metric-label">Confidence TB</span>
+                    <span class="video-stat-value" id="statConf">0%</span>
+                    <span class="video-stat-label">Confidence TB</span>
                 </div>
             </div>
-            <div class="metric-card">
-                <div class="metric-icon orange"><i class='bx bx-film'></i></div>
+            <div class="video-stat-card">
+                <div class="video-stat-icon orange"><i class='bx bx-film'></i></div>
                 <div>
-                    <span class="metric-value" id="statFrames">0</span>
-                    <span class="metric-label">Tổng Frames</span>
+                    <span class="video-stat-value" id="statFrames">0</span>
+                    <span class="video-stat-label">Tổng Frames</span>
                 </div>
             </div>
-            <div class="metric-card">
-                <div class="metric-icon green"><i class='bx bx-tachometer'></i></div>
+            <div class="video-stat-card">
+                <div class="video-stat-icon green"><i class='bx bx-tachometer'></i></div>
                 <div>
-                    <span class="metric-value" id="statFps">0</span>
-                    <span class="metric-label">FPS</span>
+                    <span class="video-stat-value" id="statFps">0</span>
+                    <span class="video-stat-label">Tốc độ video</span>
                 </div>
             </div>
-            <div class="metric-card">
-                <div class="metric-icon blue"><i class='bx bx-stopwatch'></i></div>
+            <div class="video-stat-card">
+                <div class="video-stat-icon blue"><i class='bx bx-stopwatch'></i></div>
                 <div>
-                    <span class="metric-value" id="statTime">0s</span>
-                    <span class="metric-label">Thời gian xử lý</span>
+                    <span class="video-stat-value" id="statTime">0s</span>
+                    <span class="video-stat-label">Thời gian xử lý</span>
                 </div>
             </div>
         </div>
 
         <!-- Video Visualization -->
-        <div class="visual-section">
-            <div class="section-title">
-                <i class='bx bx-movie-play'></i> Trực quan hóa kết quả video
+        <div class="video-comparison-section">
+            <div class="video-section-title">
+                <i class='bx bx-video'></i> Trực quan hóa kết quả video
             </div>
-            <div class="video-comparison">
-                <div class="video-panel">
-                    <div class="video-panel-header">
-                        <span>VIDEO GỐC</span>
-                        <span class="badge">Original</span>
+            <div class="video-comparison-grid">
+                <div class="video-preview-card">
+                    <div class="video-preview-header">
+                        <span><i class='bx bx-movie-play'></i> Video gốc</span>
                     </div>
                     <video id="viewOriginal" src="" controls></video>
                 </div>
-                <div class="video-panel">
-                    <div class="video-panel-header">
-                        <span>KẾT QUẢ AI</span>
-                        <span class="badge ai">Mask + Seg</span>
+                <div class="video-preview-card">
+                    <div class="video-preview-header">
+                        <span><i class='bx bx-play-circle'></i> Kết quả AI - Mask + Segmentation</span>
                     </div>
                     <video id="viewResult" src="" controls></video>
                 </div>
@@ -437,37 +382,74 @@
         </div>
 
         <!-- Info Cards Grid -->
-        <div class="video-details-grid">
+        <div class="video-info-grid">
             <!-- Input Info -->
-            <div class="info-card">
-                <div class="section-title" style="font-size: 16px;"><i class='bx bx-video'></i> Thông tin video đầu vào</div>
-                <div class="def-grid">
-                    <div class="def-label">Tên file:</div><div class="def-value" id="infoFilename">...</div>
-                    <div class="def-label">Dung lượng:</div><div class="def-value" id="infoSize">...</div>
-                    <div class="def-label">Độ phân giải:</div><div class="def-value" id="infoResolution">...</div>
-                    <div class="def-label">Định dạng:</div><div class="def-value" id="infoFormat">...</div>
-                    <div class="def-label">Thời lượng:</div><div class="def-value" id="infoDuration">...</div>
-                    <div class="def-label">FPS:</div><div class="def-value" id="infoFps">...</div>
-                    <div class="def-label">Tổng frames:</div><div class="def-value" id="infoFrames">...</div>
+            <div class="video-info-card">
+                <div class="video-section-title" style="font-size: 16px;"><i class='bx bx-info-circle'></i> Thông tin video</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+                    <div class="def-grid-half">
+                        <div class="def-label">Tên file:</div><div class="def-value" id="infoFilename">...</div>
+                        <div class="def-label">Dung lượng:</div><div class="def-value" id="infoSize">...</div>
+                        <div class="def-label">Độ phân giải:</div><div class="def-value" id="infoResolution">...</div>
+                        <div class="def-label">Định dạng:</div><div class="def-value" id="infoFormat">...</div>
+                    </div>
+                    <div class="def-grid-half">
+                        <div class="def-label">Thời lượng:</div><div class="def-value" id="infoDuration">...</div>
+                        <div class="def-label">FPS:</div><div class="def-value" id="infoFps">...</div>
+                        <div class="def-label">Tổng frames:</div><div class="def-value" id="infoFrames">...</div>
+                    </div>
                 </div>
             </div>
             
             <!-- Model Info -->
-            <div class="info-card">
-                <div class="section-title" style="font-size: 16px;"><i class='bx bx-cog'></i> Thông tin mô hình</div>
-                <div class="def-grid">
-                    <div class="def-label">Mô hình:</div><div class="def-value" id="modName">YOLOv8 Segmentation</div>
-                    <div class="def-label">Task:</div><div class="def-value" id="modTask">Instance Segmentation</div>
-                    <div class="def-label">Conf Threshold:</div><div class="def-value" id="modConf">0.5 (Mặc định)</div>
-                    <div class="def-label">IoU Threshold:</div><div class="def-value" id="modIou">0.7 (Mặc định)</div>
+            <div class="video-info-card no-pad">
+                <div class="video-section-title" style="font-size: 16px; padding: 18px 18px 0 18px; margin-bottom: 12px;"><i class='bx bx-cog'></i> Thông tin mô hình</div>
+                <div style="padding: 0 18px 18px 18px;">
+                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
+                        <span style="color: #64748B; font-size: 14px;">Mô hình:</span>
+                        <span style="font-weight: 600; color: #0F172A; font-size: 14px;" id="modName">YOLOv8 Segmentation</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
+                        <span style="color: #64748B; font-size: 14px;">Task:</span>
+                        <span style="font-weight: 600; color: #0F172A; font-size: 14px;" id="modTask">Instance Segmentation</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
+                        <span style="color: #64748B; font-size: 14px;">Confidence threshold:</span>
+                        <span style="font-weight: 600; color: #0F172A; font-size: 14px;" id="modConf">0.5 (Mặc định)</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                        <span style="color: #64748B; font-size: 14px;">IoU threshold:</span>
+                        <span style="font-weight: 600; color: #0F172A; font-size: 14px;" id="modIou">0.7 (Mặc định)</span>
+                    </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- Summary Card -->
+        <div class="video-summary-card">
+            <div class="video-section-title" style="font-size: 16px;"><i class='bx bx-chart'></i> Tóm tắt phân tích</div>
+            <p style="color: #475569; font-size: 14px; margin-bottom: 24px; margin-top: 0;" id="reportSummaryText">...</p>
             
-            <!-- Summary -->
-            <div class="info-card">
-                <div class="section-title" style="font-size: 16px;"><i class='bx bx-list-check'></i> Tóm tắt phân tích</div>
-                <div class="analysis-summary" id="reportSummaryText" style="margin-top: 0;">
-                    <!-- Injected via JS -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                <!-- Confidence Bar -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 8px;">
+                        <span>Độ tin cậy trung bình</span>
+                        <span id="summaryConfText">0%</span>
+                    </div>
+                    <div style="height: 6px; background: #E2E8F0; border-radius: 4px; overflow: hidden;">
+                        <div id="summaryConfBar" style="height: 100%; background: #3B82F6; width: 0%; transition: width 1s ease;"></div>
+                    </div>
+                </div>
+                <!-- Speed Bar -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 8px;">
+                        <span>Tốc độ xử lý trung bình</span>
+                        <span id="summarySpeedText">0 frames/giây</span>
+                    </div>
+                    <div style="height: 6px; background: #E2E8F0; border-radius: 4px; overflow: hidden;">
+                        <div id="summarySpeedBar" style="height: 100%; background: #10B981; width: 0%; transition: width 1s ease;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -615,16 +597,22 @@ function renderReport(data) {
     // Download link
     document.getElementById('downloadResultBtn').href = data.result_video;
 
-    // Summary Text
-    let processSpeedText = "";
+    // Summary Text and Progress Bars
+    let speed = 0;
     if (data.processing_time > 0) {
-        const speed = data.total_frames / data.processing_time;
-        processSpeedText = `<br>● Tốc độ xử lý trung bình: <strong>${speed.toFixed(2)} frames/giây</strong>`;
+        speed = (data.total_frames / data.processing_time).toFixed(2);
     }
-    
-    const summary = `Hệ thống đã xử lý xong <strong>${data.total_frames}</strong> frame trong <strong>${data.processing_time.toFixed(2)} giây</strong> và ghi nhận tổng cộng <strong>${data.pothole_count}</strong> lượt phát hiện ổ gà. <br><br>● Độ tin cậy trung bình đạt: <strong>${data.avg_confidence.toFixed(1)}%</strong>${processSpeedText}`;
+    const summary = `Hệ thống đã xử lý xong <strong>${data.total_frames} frame</strong> trong <strong>${data.processing_time.toFixed(2)} giây</strong> và ghi nhận tổng cộng <strong>${data.pothole_count} lượt phát hiện ổ gà.</strong>`;
     
     document.getElementById('reportSummaryText').innerHTML = summary;
+    
+    document.getElementById('summaryConfText').textContent = data.avg_confidence.toFixed(1) + '%';
+    document.getElementById('summaryConfBar').style.width = data.avg_confidence.toFixed(1) + '%';
+    
+    // For speed progress bar, max out at 60 FPS visual scale for instance
+    document.getElementById('summarySpeedText').textContent = speed + ' frames/giây';
+    let speedPct = speed > 0 ? (Math.min(speed / 60, 1) * 100) : 0;
+    document.getElementById('summarySpeedBar').style.width = speedPct + '%';
 
     // Info Cards
     document.getElementById('infoFilename').textContent = selectedFile.name;

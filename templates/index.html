@@ -1,79 +1,78 @@
 {% extends "base.html" %}
 {% block title %}PotholeSeg - Phát hiện và phân vùng ổ gà bằng AI{% endblock %}
 
+{% block head_extra %}
+{% include "partials/auth_style.html" %}
+{% endblock %}
+
 {% block body %}
 {% include "partials/navbar.html" %}
 
-<!-- ===== HERO SECTION ===== -->
-<section class="hero" id="hero">
+<!-- ===== AUTH HERO SECTION ===== -->
+<section class="auth-hero" id="authHero">
 
-    <div class="hero-container">
-        <!-- LEFT: Nội dung giới thiệu (58%) -->
-        <div class="hero-content">
-            <h1>Tham gia<br><span class="text-highlight">PotholeSeg</span> ngay hôm nay!</h1>
-            <p class="hero-desc">Tạo tài khoản để sử dụng hệ thống phân vùng ổ gà<br>trên mặt đường bằng trí tuệ nhân tạo.</p>
+    <div class="auth-hero-container">
+        <!-- LEFT: Nội dung giới thiệu -->
+        {% include "partials/auth_left.html" %}
 
-            <div class="hero-features">
-                <div class="hero-feature">
-                    <div class="feature-icon"><i class='bx bx-rocket'></i></div>
-                    <span>Trải nghiệm mô hình AI hiện đại</span>
-                </div>
-                <div class="hero-feature">
-                    <div class="feature-icon"><i class='bx bx-save'></i></div>
-                    <span>Lưu lịch sử phân tích</span>
-                </div>
-                <div class="hero-feature">
-                    <div class="feature-icon"><i class='bx bx-cloud'></i></div>
-                    <span>Quản lý dữ liệu cá nhân</span>
-                </div>
-                <div class="hero-feature">
-                    <div class="feature-icon"><i class='bx bx-bar-chart'></i></div>
-                    <span>Hỗ trợ phân tích ảnh và video</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- RIGHT: Form đăng ký (42%) -->
-        <div class="hero-form-wrap">
-            <div class="hero-card">
+        <!-- RIGHT: Form đăng ký -->
+        <div class="auth-hero-form-wrap">
+            <div class="auth-hero-card">
                 <h2>Đăng ký tài khoản</h2>
                 <p class="subtitle">Tạo tài khoản để bắt đầu sử dụng hệ thống</p>
 
                 <form action="{{ url_for('register') }}" method="POST" id="heroRegisterForm">
                     <div class="form-group">
+                        <label class="form-label">Họ và tên</label>
                         <div class="form-input-icon">
                             <i class='bx bx-user icon'></i>
-                            <input type="text" name="full_name" class="form-input" placeholder="Họ và tên" required>
+                            <input type="text" name="full_name" class="form-input" placeholder="Nhập họ và tên" required>
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Email</label>
                         <div class="form-input-icon">
                             <i class='bx bx-envelope icon'></i>
-                            <input type="email" name="email" class="form-input" placeholder="Email" required>
+                            <input type="email" name="email" class="form-input" placeholder="Nhập email" required>
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Mật khẩu</label>
                         <div class="form-input-icon">
                             <i class='bx bx-lock-alt icon'></i>
-                            <input type="password" name="password" class="form-input" placeholder="Mật khẩu" required minlength="6">
+                            <input type="password" name="password" class="form-input" placeholder="Tối thiểu 6 ký tự" required minlength="6">
                             <button type="button" class="toggle-password" onclick="togglePassword(this)"><i class='bx bx-hide'></i></button>
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">Xác nhận mật khẩu</label>
                         <div class="form-input-icon">
                             <i class='bx bx-lock icon'></i>
-                            <input type="password" name="confirm_password" class="form-input" placeholder="Xác nhận mật khẩu" required>
+                            <input type="password" name="confirm_password" class="form-input" placeholder="Nhập lại mật khẩu" required>
                             <button type="button" class="toggle-password" onclick="togglePassword(this)"><i class='bx bx-hide'></i></button>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 btn-lg">
+                    <button type="submit" class="btn btn-primary w-100 btn-lg" style="margin-bottom: 5px;">
                         <i class='bx bx-user-plus'></i> Đăng ký
                     </button>
                 </form>
 
-                <p class="hero-card-footer">
+                <div class="social-divider">
+                    <span>Hoặc đăng ký với</span>
+                </div>
+
+                <div class="social-login-grid">
+                    <button type="button" class="btn-social">
+                        <i class='bx bxl-google' style='color:#ea4335;'></i> Google
+                    </button>
+                    <button type="button" class="btn-social">
+                        <i class='bx bxl-github' style='color:#333;'></i> GitHub
+                    </button>
+                </div>
+
+                <div class="auth-hero-card-footer">
                     Đã có tài khoản? <a href="{{ url_for('login') }}">Đăng nhập ngay</a>
-                </p>
+                </div>
             </div>
         </div>
     </div>
