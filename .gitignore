@@ -1,19 +1,73 @@
-# Environment
+# Environment & Secrets
 .env
+.env.*
+*.env
 
-# Python
+# Python & Virtual Environments
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
 .venv/
 venv/
 env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# IDE
+# IDE & OS
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
 
-# Training / generated files
+# Logs & Cache
+*.log
+logs/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Database (loại trừ database cục bộ chứa dữ liệu cá nhân / runtime)
+*.db
+*.db-journal
+*.sqlite3
+potholeseg.db
+
+# Runtime uploads & generated results
+static/uploads/*
+!static/uploads/.gitkeep
+static/results/*
+!static/results/.gitkeep
+app/static/uploads/*
+app/static/results/*
+
+# Temporary files & test artifacts
+temp*.txt
+temp/
+*.tmp
+update_script.py
+test_vp*.webm
+
+# Large archive files & YOLO training runs
 runs/
-
-# Archive files
 *.zip
+*.tar
+*.gz
+*.rar
