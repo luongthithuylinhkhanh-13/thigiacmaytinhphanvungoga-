@@ -24,9 +24,11 @@ pip install -r requirements.txt
 
 ### 2. Chạy ứng dụng
 
-```bash
-python app.py
-```
+- **Cách 1 (Khuyên dùng trên Windows):** Click đúp hoặc chạy script `START-WEB.bat` (tự động phát hiện môi trường Python, kích hoạt venv nếu có, kiểm tra port 5000 và tự động mở trình duyệt).
+- **Cách 2 (Dòng lệnh):**
+  ```bash
+  python app.py
+  ```
 
 ### 3. Truy cập
 
@@ -37,16 +39,19 @@ Mở trình duyệt tại: **http://127.0.0.1:5000**
 ```
 potholeseg/
 ├── app.py                  # File chính Flask application
+├── START-WEB.bat           # Script khởi động tự động trên Windows
 ├── requirements.txt        # Dependencies
 ├── README.md               # Hướng dẫn
-├── potholeseg.db           # Database SQLite (tự tạo)
+├── potholeseg.db           # Database SQLite (tự tạo khi khởi chạy)
 ├── models/
 │   └── best.pt             # Model YOLOv8 Segmentation
+├── knowledge/              # Cơ sở tri thức RAG (hỏi đáp AI)
+├── rag/                    # Pipeline RAG và tích hợp LLM
 ├── static/
 │   ├── css/
 │   │   └── style.css       # Stylesheet chính
-│   ├── uploads/            # Ảnh/video upload
-│   └── results/            # Kết quả phân tích
+│   ├── uploads/            # Thư mục lưu ảnh/video upload
+│   └── results/            # Thư mục lưu kết quả phân tích
 └── templates/
     ├── base.html            # Template gốc
     ├── index.html           # Trang chủ
