@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
 </head>
 <body>
     <!-- Navbar -->
@@ -425,35 +424,6 @@
         <p>Hệ thống đang xử lý...</p>
     </div>
 
-    <!-- Chatbot Integration -->
-    <div id="chatFab" class="chatbot-fab">
-        <i class="ph ph-chat-circle-dots"></i>
-    </div>
-
-    <div id="chatWindow" class="chat-window">
-        <div class="chat-header">
-            <div class="chat-header-info">
-                <h3>TRỢ LÝ AI</h3>
-                <p>Pothole Segmentation Assistant</p>
-            </div>
-            <div class="chat-header-actions">
-                <button id="chatClearBtn" class="chat-btn" title="Xóa lịch sử"><i class="ph ph-trash"></i></button>
-                <button id="chatCloseBtn" class="chat-btn" title="Đóng"><i class="ph ph-x"></i></button>
-            </div>
-        </div>
-        <div id="chatBody" class="chat-body">
-            <div class="chat-message bot">
-                Xin chào! Tôi là Trợ lý AI. Tôi có thể giúp bạn tìm hiểu về hệ thống phân vùng ổ gà, kết quả dự đoán và cách sử dụng website.
-            </div>
-        </div>
-        <div id="chatStatus" class="chat-status">Trợ lý AI đang hoạt động</div>
-        <div class="chat-input-area">
-            <input type="text" id="chatInput" class="chat-input" placeholder="Nhập câu hỏi...">
-            <button id="chatSendBtn" class="chat-send-btn"><i class="ph ph-paper-plane-right"></i></button>
-        </div>
-    </div>
-
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/chatbot.js') }}?v=2"></script>
 </body>
 </html>
