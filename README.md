@@ -45,8 +45,6 @@ potholeseg/
 ├── potholeseg.db           # Database SQLite (tự tạo khi khởi chạy)
 ├── models/
 │   └── best.pt             # Model YOLOv8 Segmentation
-├── knowledge/              # Cơ sở tri thức RAG (hỏi đáp AI)
-├── rag/                    # Pipeline RAG và tích hợp LLM
 ├── static/
 │   ├── css/
 │   │   └── style.css       # Stylesheet chính
