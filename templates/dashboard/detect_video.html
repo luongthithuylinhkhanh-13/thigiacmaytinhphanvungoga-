@@ -498,6 +498,10 @@ function handleFile(file) {
         showError('Chỉ hỗ trợ file MP4, AVI, MOV!');
         return;
     }
+    if (file.size > 100 * 1024 * 1024) {
+        showError(`Dung lượng video (${(file.size / (1024 * 1024)).toFixed(1)} MB) vượt quá giới hạn 100MB. Vui lòng chọn video nhỏ hơn.`);
+        return;
+    }
     selectedFile = file;
     const url = URL.createObjectURL(file);
     previewVideo.src = url;
@@ -509,7 +513,18 @@ function handleFile(file) {
     resultArea.style.display = 'none';
 }
 
+let pollTimer = null;
+let currentXhr = null;
+
 function resetUpload() {
+    if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+    }
+    if (currentXhr) {
+        currentXhr.abort();
+        currentXhr = null;
+    }
     selectedFile = null;
     videoInput.value = '';
     uploadZone.style.display = 'block';
@@ -526,56 +541,168 @@ function showError(msg) {
     alert(msg);
 }
 
-async function analyzeVideo() {
+function handleUploadError(errMsg) {
+    if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+    }
+    currentXhr = null;
+    processingOverlay.classList.remove('active');
+    analyzeBtn.disabled = false;
+    showError(errMsg);
+}
+
+function analyzeVideo() {
     if (!selectedFile) { showError('Vui lòng chọn video!'); return; }
 
-    const formData = new FormData();
-    formData.append('file', selectedFile);
+    if (selectedFile.size > 100 * 1024 * 1024) {
+        showError(`Dung lượng video (${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB) vượt quá giới hạn 100MB.`);
+        return;
+    }
+
+    // Dừng vòng polling hoặc upload cũ nếu có
+    if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+    }
+    if (currentXhr) {
+        currentXhr.abort();
+        currentXhr = null;
+    }
 
     processingOverlay.classList.add('active');
     analyzeBtn.disabled = true;
-    let progress = 0;
+
     const progressBar = document.getElementById('progressBar');
-    const progressInterval = setInterval(() => {
-        progress = Math.min(progress + Math.random() * 2, 95);
-        progressBar.style.width = progress + '%';
-        document.getElementById('processingStatus').innerHTML = `Đang xử lý: ${Math.round(progress)}%<br>AI đang chạy trên từng frame`;
-    }, 1000);
+    const processingStatus = document.getElementById('processingStatus');
+    progressBar.style.width = '0%';
+    processingStatus.innerHTML = 'Đang bắt đầu tải video lên máy chủ...';
 
-    try {
-        const response = await fetch('/detect-video', { method: 'POST', body: formData });
-        let data;
-        try { data = await response.json(); } catch(e) { throw new Error('Server trả về phản hồi không hợp lệ'); }
-        
-        if (!response.ok || !data.success) throw new Error(data.error || 'Lỗi máy chủ');
+    // ==========================================
+    // GIAI ĐOẠN 1: TẢI VIDEO LÊN MÁY CHỦ (XHR PROGRESS)
+    // ==========================================
+    const xhr = new XMLHttpRequest();
+    currentXhr = xhr;
+    xhr.open('POST', '/detect-video', true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
-        clearInterval(progressInterval);
-        progressBar.style.width = '100%';
+    xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+            const pct = Math.min((e.loaded / e.total) * 100, 100);
+            const loadedMB = (e.loaded / (1024 * 1024)).toFixed(1);
+            const totalMB = (e.total / (1024 * 1024)).toFixed(1);
+            progressBar.style.width = pct.toFixed(1) + '%';
+            processingStatus.innerHTML = `Đang tải video lên máy chủ: <strong>${loadedMB} MB / ${totalMB} MB</strong> (${Math.round(pct)}%)<br>Vui lòng đợi trong giây lát...`;
+        }
+    };
 
-        setTimeout(() => {
-            inputSection.style.display = 'none';
-            resultArea.style.display = 'block';
+    xhr.onload = function() {
+        currentXhr = null;
+        if (xhr.status === 200) {
+            let uploadData;
             try {
-                renderReport(data);
-            } catch(renderErr) {
-                console.error("Lỗi render JS:", renderErr);
-                showError("Lỗi khi hiển thị báo cáo: " + renderErr.message);
+                uploadData = JSON.parse(xhr.responseText);
+            } catch(e) {
+                handleUploadError('Phản hồi từ máy chủ không hợp lệ.');
+                return;
             }
-            resultArea.scrollIntoView({ behavior: 'smooth' });
-        }, 500);
 
-    } catch (err) {
-        let msg = err.message;
-        if (msg.includes('Failed to fetch')) msg = 'Mất kết nối tới máy chủ. Vui lòng kiểm tra lại.';
-        showError(msg);
-    } finally {
-        setTimeout(() => {
-            clearInterval(progressInterval);
+            if (!uploadData.success || !uploadData.task_id) {
+                handleUploadError(uploadData.error || 'Lỗi khi khởi tạo tác vụ phân tích.');
+                return;
+            }
+
+            const taskId = uploadData.task_id;
             progressBar.style.width = '0%';
-            processingOverlay.classList.remove('active');
-            analyzeBtn.disabled = false;
-        }, 500);
-    }
+            processingStatus.innerHTML = 'Tải video hoàn tất! Đang khởi động AI phân tích từng frame...';
+
+            // ==========================================
+            // GIAI ĐOẠN 2: AI ANALYSIS PROGRESS POLLING
+            // ==========================================
+            startPollingProgress(taskId);
+
+        } else {
+            let errDetail = `Lỗi máy chủ (${xhr.status})`;
+            try {
+                const errJson = JSON.parse(xhr.responseText);
+                if (errJson.error) errDetail = errJson.error;
+            } catch(e) {}
+            handleUploadError(errDetail);
+        }
+    };
+
+    xhr.onerror = function() {
+        handleUploadError('Mất kết nối tới máy chủ khi tải video. Vui lòng kiểm tra lại kết nối mạng.');
+    };
+
+    xhr.ontimeout = function() {
+        handleUploadError('Quá thời gian tải video lên (Upload Timeout). Vui lòng thử lại.');
+    };
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    xhr.send(formData);
+}
+
+function startPollingProgress(taskId) {
+    const progressBar = document.getElementById('progressBar');
+    const processingStatus = document.getElementById('processingStatus');
+    let pollCount = 0;
+    const maxPolls = 1200; // 1200 * 500ms = 600s = tối đa 10 phút
+
+    pollTimer = setInterval(async () => {
+        pollCount++;
+        if (pollCount > maxPolls) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+            handleUploadError('Quá trình phân tích quá thời gian cho phép (Timeout). Vui lòng thử lại với video ngắn hơn.');
+            return;
+        }
+
+        try {
+            const progRes = await fetch(`/api/video-progress/${taskId}`);
+            if (!progRes.ok) return;
+            const progData = await progRes.json();
+
+            if (progData.status === 'processing') {
+                const current = progData.current_frame || 0;
+                const total = progData.total_frames || 0;
+                const pct = Math.max(0, Math.min(progData.progress || 0, 99.5));
+                progressBar.style.width = pct + '%';
+                if (total > 0) {
+                    processingStatus.innerHTML = `Đang phân tích AI: Frame <strong>${current}/${total}</strong> (${Math.round(pct)}%)<br>Đang phát hiện và phân vùng ổ gà`;
+                } else {
+                    processingStatus.innerHTML = `Đang đọc thông tin video...<br>AI đang khởi động`;
+                }
+            } else if (progData.status === 'completed') {
+                clearInterval(pollTimer);
+                pollTimer = null;
+                progressBar.style.width = '100%';
+                processingStatus.innerHTML = 'Hoàn tất 100%! Đang tải hiển thị báo cáo...';
+
+                setTimeout(() => {
+                    inputSection.style.display = 'none';
+                    resultArea.style.display = 'block';
+                    try {
+                        renderReport(progData.result);
+                    } catch(renderErr) {
+                        console.error("Lỗi render JS:", renderErr);
+                        showError("Lỗi khi hiển thị báo cáo: " + renderErr.message);
+                    }
+                    resultArea.scrollIntoView({ behavior: 'smooth' });
+                    processingOverlay.classList.remove('active');
+                    analyzeBtn.disabled = false;
+                }, 400);
+
+            } else if (progData.status === 'failed') {
+                clearInterval(pollTimer);
+                pollTimer = null;
+                handleUploadError(progData.error || 'Quá trình phân tích video thất bại.');
+            }
+        } catch (pollErr) {
+            console.warn('Lỗi kiểm tra tiến độ:', pollErr);
+        }
+    }, 500);
 }
 
 function renderReport(data) {

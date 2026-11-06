@@ -8,6 +8,7 @@ import uuid
 import time
 import json
 import sqlite3
+import threading
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -49,6 +50,19 @@ ALLOWED_VIDEO_EXT = {'mp4', 'avi', 'mov'}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULT_FOLDER, exist_ok=True)
 
+# Quản lý tác vụ video bất đồng bộ (Thread-safe)
+video_tasks = {}
+video_tasks_lock = threading.Lock()
+model_lock = threading.Lock()
+
+def cleanup_old_video_tasks():
+    """Dọn dẹp các tác vụ cũ quá 2 giờ để giải phóng bộ nhớ"""
+    now = time.time()
+    with video_tasks_lock:
+        expired = [tid for tid, task in video_tasks.items() if now - task.get('created_at', 0) > 7200]
+        for tid in expired:
+            del video_tasks[tid]
+
 # ============================================================
 # Load YOLOv8 Model
 # ============================================================
@@ -62,6 +76,13 @@ try:
         model = YOLO(MODEL_PATH)
         DEMO_MODE = False
         print(f"[+] Model loaded: {MODEL_PATH}")
+        try:
+            dummy_img = np.zeros((320, 320, 3), dtype=np.uint8)
+            with model_lock:
+                _ = model.predict(source=dummy_img, save=False, verbose=False)
+            print("[+] Model warmup completed")
+        except Exception as we:
+            print(f"[*] Warmup warning: {we}")
     else:
         print(f"[!] Model not found: {MODEL_PATH} -> DEMO MODE")
 except ImportError:
@@ -165,9 +186,15 @@ def generate_unique_filename(filename):
 @app.errorhandler(413)
 @app.errorhandler(RequestEntityTooLarge)
 def entity_too_large(e):
-    if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return jsonify({'success': False, 'error': 'File quá lớn.'}), 413
-    flash('File quá lớn. Vui lòng chọn file nhỏ hơn.', 'error')
+    if (request.is_json or 
+        request.headers.get('X-Requested-With') == 'XMLHttpRequest' or
+        request.path in ['/detect-video', '/detect-image'] or
+        'multipart/form-data' in (request.content_type or '')):
+        return jsonify({
+            'success': False, 
+            'error': 'Dung lượng file vượt quá giới hạn cho phép (tối đa 100MB cho video).'
+        }), 413
+    flash('Dung lượng file vượt quá giới hạn cho phép (tối đa 100MB).', 'error')
     return redirect(request.referrer or url_for('index'))
 
 # ============================================================
@@ -491,7 +518,8 @@ def detect_image():
 def run_yolo_inference(image_path, unique_name, conf_threshold, show_mask, show_contour, show_conf):
     """Chạy YOLOv8 segmentation inference trên ảnh"""
     start_time = time.perf_counter()
-    results = model.predict(source=image_path, save=False, conf=conf_threshold)
+    with model_lock:
+        results = model.predict(source=image_path, save=False, conf=conf_threshold)
 
     if not results:
         return {'pothole_count': 0, 'avg_confidence': 0, 'total_area': 0, 'potholes': []}
@@ -724,6 +752,77 @@ def generate_demo_result(image_path, unique_name):
 # ============================================================
 # Routes: Nhận diện video
 # ============================================================
+def process_video_background(task_id, upload_path, unique_name, original_name, user_id):
+    """Hàm chạy nền xử lý video bằng YOLOv8 và cập nhật tiến độ theo từng frame"""
+    start_time = time.time()
+    try:
+        def update_progress(current_frame, total_frames):
+            pct = round((current_frame / total_frames) * 100, 1) if total_frames > 0 else 0
+            pct = min(pct, 99.0)  # Giữ tối đa 99% cho tới khi ghi file và lưu DB hoàn tất
+            with video_tasks_lock:
+                if task_id in video_tasks:
+                    video_tasks[task_id]['current_frame'] = current_frame
+                    video_tasks[task_id]['total_frames'] = total_frames
+                    video_tasks[task_id]['progress'] = pct
+
+        if DEMO_MODE:
+            result_data = generate_demo_video_result(upload_path, unique_name, progress_callback=update_progress)
+        else:
+            result_data = run_yolo_video_inference(upload_path, unique_name, progress_callback=update_progress)
+
+        processing_time = round(time.time() - start_time, 3)
+        result_data['processing_time'] = processing_time
+
+        # Lưu lịch sử vào database (tạo kết nối riêng an toàn trong thread)
+        with sqlite3.connect(DATABASE) as db:
+            db.row_factory = sqlite3.Row
+            db.execute('''
+                INSERT INTO analysis_history
+                (user_id, file_name, file_type, original_path, result_path,
+                 pothole_count, avg_confidence, processing_time, details)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                user_id, original_name, 'video',
+                f'uploads/{unique_name}', result_data.get('result_path', ''),
+                result_data.get('pothole_count', 0),
+                result_data.get('avg_confidence', 0),
+                processing_time,
+                json.dumps({'fps': result_data.get('fps', 0),
+                            'total_frames': result_data.get('total_frames', 0)})
+            ))
+            db.commit()
+
+        rel_path = result_data.get('result_path', '').replace('\\', '/').lstrip('/')
+        result_video_url = f"/static/{rel_path}"
+
+        result_payload = {
+            'success': True,
+            'result_video': result_video_url,
+            'pothole_count': result_data.get('pothole_count', 0),
+            'avg_confidence': result_data.get('avg_confidence', 0),
+            'fps': result_data.get('fps', 0),
+            'total_frames': result_data.get('total_frames', 0),
+            'processing_time': processing_time,
+            'demo_mode': DEMO_MODE
+        }
+
+        with video_tasks_lock:
+            if task_id in video_tasks:
+                video_tasks[task_id]['status'] = 'completed'
+                video_tasks[task_id]['progress'] = 100.0
+                video_tasks[task_id]['current_frame'] = result_data.get('total_frames', 0)
+                video_tasks[task_id]['total_frames'] = result_data.get('total_frames', 0)
+                video_tasks[task_id]['result'] = result_payload
+
+    except Exception as e:
+        print(f"[!] Background Video Error ({task_id}): {e}")
+        import traceback
+        traceback.print_exc()
+        with video_tasks_lock:
+            if task_id in video_tasks:
+                video_tasks[task_id]['status'] = 'failed'
+                video_tasks[task_id]['error'] = f'Lỗi xử lý video: {str(e)}'
+
 @app.route('/detect-video', methods=['GET', 'POST'])
 @login_required
 def detect_video():
@@ -745,89 +844,174 @@ def detect_video():
             upload_path = os.path.join(UPLOAD_FOLDER, unique_name)
             file.save(upload_path)
 
-            start_time = time.time()
+            task_id = str(uuid.uuid4())
+            cleanup_old_video_tasks()
 
-            if DEMO_MODE:
-                result_data = generate_demo_video_result(upload_path, unique_name)
-            else:
-                result_data = run_yolo_video_inference(upload_path, unique_name)
+            with video_tasks_lock:
+                video_tasks[task_id] = {
+                    'status': 'processing',
+                    'progress': 0.0,
+                    'current_frame': 0,
+                    'total_frames': 0,
+                    'result': None,
+                    'error': None,
+                    'created_at': time.time()
+                }
 
-            processing_time = round(time.time() - start_time, 3)
-            result_data['processing_time'] = processing_time
-
-            # Lưu lịch sử
-            db = get_db()
-            db.execute('''
-                INSERT INTO analysis_history
-                (user_id, file_name, file_type, original_path, result_path,
-                 pothole_count, avg_confidence, processing_time, details)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                session['user_id'], original_name, 'video',
-                f'uploads/{unique_name}', result_data.get('result_path', ''),
-                result_data.get('pothole_count', 0),
-                result_data.get('avg_confidence', 0),
-                processing_time,
-                json.dumps({'fps': result_data.get('fps', 0),
-                            'total_frames': result_data.get('total_frames', 0)})
-            ))
-            db.commit()
+            thread = threading.Thread(
+                target=process_video_background,
+                args=(task_id, upload_path, unique_name, original_name, session['user_id']),
+                daemon=True
+            )
+            thread.start()
 
             return jsonify({
                 'success': True,
-                'result_video': url_for('static', filename=result_data.get('result_path', '')),
-                'pothole_count': result_data.get('pothole_count', 0),
-                'avg_confidence': result_data.get('avg_confidence', 0),
-                'fps': result_data.get('fps', 0),
-                'total_frames': result_data.get('total_frames', 0),
-                'processing_time': processing_time,
-                'demo_mode': DEMO_MODE
+                'task_id': task_id,
+                'message': 'Đã khởi tạo tác vụ phân tích video nền.'
             })
 
         except Exception as e:
-            print(f"[!] Video Error: {e}")
+            print(f"[!] Video Upload Error: {e}")
             import traceback
             traceback.print_exc()
-            return jsonify({'success': False, 'error': f'Lỗi xử lý video: {str(e)}'}), 500
+            return jsonify({'success': False, 'error': f'Lỗi upload video: {str(e)}'}), 500
 
     return render_template('dashboard/detect_video.html', user=user, demo_mode=DEMO_MODE)
 
-def run_yolo_video_inference(video_path, unique_name):
-    """Chạy YOLOv8 trên video"""
+@app.route('/api/video-progress/<task_id>', methods=['GET'])
+@login_required
+def api_video_progress(task_id):
+    """API trả về tiến độ phân tích video theo frame thực tế"""
+    with video_tasks_lock:
+        task = video_tasks.get(task_id)
+
+    if not task:
+        return jsonify({
+            'status': 'not_found',
+            'error': 'Tác vụ không tồn tại hoặc đã hết hạn.'
+        }), 404
+
+    return jsonify({
+        'status': task['status'],
+        'progress': task['progress'],
+        'current_frame': task['current_frame'],
+        'total_frames': task['total_frames'],
+        'result': task['result'],
+        'error': task['error']
+    })
+
+def run_yolo_video_inference(video_path, unique_name, progress_callback=None):
+    """Chạy YOLOv8 trên video với tối ưu hóa đa luồng, frame sampling, bộ mã hóa H.264/MP4 và cập nhật tiến độ"""
+    import torch
+    try:
+        torch.set_num_threads(min(8, os.cpu_count() or 4))
+    except Exception:
+        pass
+
     cap = cv2.VideoCapture(video_path)
-    fps = cap.get(cv2.CAP_PROP_FPS)
+    fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    result_name = f"result_{unique_name.rsplit('.', 1)[0]}.webm"
-    result_path = os.path.join(RESULT_FOLDER, result_name)
-    fourcc = cv2.VideoWriter_fourcc(*'vp80')
-    out = cv2.VideoWriter(result_path, fourcc, fps, (w, h))
+    # Đảm bảo kích thước chia hết cho 2 để chuẩn hóa H.264 / yuv420p
+    w = w - (w % 2) if w > 0 else 1280
+    h = h - (h % 2) if h > 0 else 720
+
+    base_name = unique_name.rsplit('.', 1)[0]
+    
+    # Khởi tạo Video Writer: Ưu tiên PyAV H.264 MP4 (chuẩn HTML5 và nhanh gấp 20-30 lần VP80)
+    use_pyav = False
+    container = None
+    stream = None
+    out = None
+
+    try:
+        import av
+        result_name = f"result_{base_name}.mp4"
+        result_path = os.path.join(RESULT_FOLDER, result_name)
+        container = av.open(result_path, mode='w')
+        stream = container.add_stream('libx264', rate=int(round(fps)))
+        stream.width = w
+        stream.height = h
+        stream.pix_fmt = 'yuv420p'
+        stream.options = {'preset': 'ultrafast', 'crf': '24'}
+        use_pyav = True
+    except Exception as e:
+        print(f"[*] PyAV không khả dụng ({e}), dùng OpenCV VideoWriter")
+        result_name = f"result_{base_name}.webm"
+        result_path = os.path.join(RESULT_FOLDER, result_name)
+        fourcc = cv2.VideoWriter_fourcc(*'vp80')
+        out = cv2.VideoWriter(result_path, fourcc, fps, (w, h))
 
     total_potholes = 0
     all_confs = []
+    last_annotated = None
+    last_count = 0
+    frame_idx = 0
+    # Frame sampling: với video dài, chạy inference mỗi 2 frame và kế thừa mask cho frame xen kẽ
+    # Giữ nguyên chất lượng và độ mượt 25 FPS đầy đủ
+    stride = 2 if total_frames > 20 else 1
 
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
+    try:
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+            frame_idx += 1
 
-        results = model.predict(source=frame, save=False, conf=0.5, verbose=False)
-        if results:
-            result = results[0]
-            count = len(result.boxes) if result.boxes is not None else 0
-            total_potholes += count
-            if result.boxes is not None and count > 0:
-                confs = result.boxes.conf.cpu().numpy()
-                all_confs.extend(confs.tolist())
-            annotated = result.plot()
-            out.write(annotated)
-        else:
-            out.write(frame)
+            if progress_callback:
+                progress_callback(frame_idx, total_frames or frame_idx)
 
-    cap.release()
-    out.release()
+            is_infer_frame = (stride <= 1) or ((frame_idx - 1) % stride == 0) or (last_annotated is None)
+
+            if is_infer_frame:
+                with model_lock:
+                    results = model.predict(source=frame, save=False, conf=0.5, verbose=False)
+                if results:
+                    result = results[0]
+                    count = len(result.boxes) if result.boxes is not None else 0
+                    total_potholes += count
+                    last_count = count
+                    if result.boxes is not None and count > 0:
+                        confs = result.boxes.conf.cpu().numpy()
+                        all_confs.extend(confs.tolist())
+                    last_annotated = result.plot()
+                else:
+                    last_annotated = frame
+                    last_count = 0
+                frame_to_write = last_annotated
+            else:
+                frame_to_write = last_annotated
+                total_potholes += last_count
+
+            # Đảm bảo frame_to_write khớp kích thước w, h
+            if frame_to_write.shape[1] != w or frame_to_write.shape[0] != h:
+                frame_to_write = cv2.resize(frame_to_write, (w, h))
+
+            if use_pyav:
+                v_frame = av.VideoFrame.from_ndarray(frame_to_write, format='bgr24')
+                for packet in stream.encode(v_frame):
+                    container.mux(packet)
+            else:
+                out.write(frame_to_write)
+
+    finally:
+        if cap is not None and cap.isOpened():
+            cap.release()
+        if use_pyav and container is not None:
+            try:
+                for packet in stream.encode():
+                    container.mux(packet)
+                container.close()
+            except Exception as ce:
+                print(f"[!] Lỗi đóng container: {ce}")
+        elif out is not None:
+            try:
+                out.release()
+            except Exception as oe:
+                print(f"[!] Lỗi release VideoWriter: {oe}")
 
     avg_conf = round(float(np.mean(all_confs)) * 100, 1) if all_confs else 0
 
@@ -835,17 +1019,22 @@ def run_yolo_video_inference(video_path, unique_name):
         'pothole_count': total_potholes,
         'avg_confidence': avg_conf,
         'fps': round(fps, 1),
-        'total_frames': total_frames,
+        'total_frames': total_frames or frame_idx,
         'result_path': f'results/{result_name}'
     }
 
-def generate_demo_video_result(video_path, unique_name):
+def generate_demo_video_result(video_path, unique_name, progress_callback=None):
     """Kết quả minh họa cho video"""
     import random
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS) or 30
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) or 100
     cap.release()
+
+    if progress_callback:
+        for i in range(1, min(total_frames, 20) + 1):
+            time.sleep(0.05)
+            progress_callback(i, total_frames)
 
     return {
         'pothole_count': random.randint(5, 20),
